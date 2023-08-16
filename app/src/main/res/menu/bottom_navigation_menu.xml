@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_home"
+        android:icon="@drawable/ic_home"
+        android:title="Home" />
+    <item
+        android:id="@+id/menu_chatbot"
+        android:icon="@drawable/ic_chatbot"
+        android:title="Agendamento" />
+    <item
+        android:id="@+id/menu_perfil"
+        android:icon="@drawable/ic_perfil"
+        android:title="Perfil" />
+    <item
+        android:id="@+id/menu_eventos"
+        android:icon="@drawable/ic_eventos"
+        android:title="Eventos" />
+    <item
+        android:id="@+id/menu_cardapio"
+        android:icon="@drawable/ic_cardapio"
+        android:title="Cardápio" />
+</menu>

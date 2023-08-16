@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "285805953156",
+    "firebase_url": "https://tinareactnativefirebase-default-rtdb.firebaseio.com",
+    "project_id": "tinareactnativefirebase",
+    "storage_bucket": "tinareactnativefirebase.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:285805953156:android:e14144c662e1531371c2d1",
+        "android_client_info": {
+          "package_name": "com.BardoTina.myapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDs-MYyB-6TwyhnuDMaLxMYG-G14gY7zn4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:285805953156:android:af6c1b909497c01771c2d1",
+        "android_client_info": {
+          "package_name": "com.example.tina"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDs-MYyB-6TwyhnuDMaLxMYG-G14gY7zn4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
