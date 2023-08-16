@@ -25,7 +25,7 @@ public class Perfil extends Fragment {
 
     private FirebaseAuth mAuth;
 
-
+//Botão Logout
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_perfil, container, false);
