@@ -18,7 +18,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/restaurant_menu/baseline_restaurant_menu_24.xml" />
+                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/person_2/baseline_person_2_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -28,8 +28,8 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_cardapio" />
+                            <entry key="color" value="5f0001" />
+                            <entry key="outputName" value="ic_userlbl" />
                             <entry key="sourceFile" value="C:\Users\Pichau\Desktop\Tina" />
                           </map>
                         </option>
