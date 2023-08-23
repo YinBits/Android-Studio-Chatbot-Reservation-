@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -9,95 +9,140 @@
     android:gravity=""
     android:background="@color/Vinho"
     tools:context=".Registro">
-    
 
 
     <ImageView
-        android:layout_width="240dp"
-        android:layout_height="240dp"
+        android:id="@+id/seta"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:src="@drawable/ic_arrow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+        <TextView
+            android:id="@+id/voltar"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="Voltar"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/white"
+            app:layout_constraintStart_toEndOf="@id/seta"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
         android:layout_gravity="center_horizontal"
         android:src="@drawable/logo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/seta"
         />
     <EditText
         android:id="@+id/edt_nome"
-        android:layout_width="50mm"
-        android:layout_height="7mm"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:backgroundTint="@color/white"
         android:hint="Nome"
         android:inputType="text"
         android:textColorHint="@color/white"
         android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logo"
         />
     <EditText
         android:id="@+id/edt_telefone"
-        android:layout_width="50mm"
-        android:layout_height="7mm"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:backgroundTint="@color/white"
         android:hint="Telefone"
         android:inputType="number"
         android:textColorHint="@color/white"
         android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edt_nome"
         />
 
     <EditText
         android:id="@+id/edt_data_nascimento"
-        android:layout_width="50mm"
-        android:layout_height="7mm"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:backgroundTint="@color/white"
         android:hint="Data de nascimento"
         android:inputType="date"
         android:textColorHint="@color/white"
         android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edt_telefone"
         />
     <EditText
         android:id="@+id/edt_CPF"
-        android:layout_width="50mm"
-        android:layout_height="7mm"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:backgroundTint="@color/white"
         android:hint="CPF"
         android:inputType="number"
         android:textColorHint="@color/white"
         android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edt_data_nascimento"
         />
     <EditText
         android:id="@+id/edt_email_registro"
-        android:layout_width="50mm"
-        android:layout_height="7mm"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:backgroundTint="@color/white"
         android:hint="E-mail"
         android:inputType="textEmailAddress"
         android:textColorHint="@color/white"
         android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edt_CPF"
         />
     <EditText
         android:id="@+id/edt_senha_registro"
-        android:layout_width="50mm"
-        android:layout_height="7mm"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:backgroundTint="@color/white"
         android:hint="Senha"
         android:inputType="textPassword"
         android:textColorHint="@color/white"
         android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edt_email_registro"
         />
     <EditText
         android:id="@+id/edt_confirmar_senha"
-        android:layout_width="50mm"
-        android:layout_height="7mm"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:backgroundTint="@color/white"
         android:hint="Confirmar senha"
         android:inputType="textPassword"
         android:textColorHint="@color/white"
         android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edt_senha_registro"
         />
     <CheckBox
-        android:layout_width="30mm"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="Mostrar senha"
@@ -106,16 +151,23 @@
         android:textSize="38px"
         android:layout_marginRight="65dp"
         android:id="@+id/ckb_mostrar_senha_registro"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edt_confirmar_senha"
         />
     <Button
-        android:layout_width="30mm"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
         android:background="@drawable/button_shape"
         android:backgroundTint="@color/Cinza"
         android:text="Entrar"
-        android:id="@+id/btn_entrar_registro"/>
+        android:id="@+id/btn_entrar_registro"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ckb_mostrar_senha_registro"
+    />
 
 
-</LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>

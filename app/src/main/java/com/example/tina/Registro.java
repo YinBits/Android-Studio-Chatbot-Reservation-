@@ -10,10 +10,14 @@ import android.text.method.PasswordTransformationMethod;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+
+import org.w3c.dom.Text;
 
 import java.util.Objects;
 
@@ -44,6 +48,8 @@ public class Registro extends AppCompatActivity {
         edt_confirmar_senha = findViewById(R.id.edt_confirmar_senha);
         CheckBox ckb_mostrar_senha_registro = findViewById(R.id.ckb_mostrar_senha_registro);
         Button btn_entrar_registro = findViewById(R.id.btn_entrar_registro);
+        TextView voltar = findViewById(R.id.voltar);
+        ImageView seta = findViewById(R.id.seta);
 
 
         ckb_mostrar_senha_registro.setOnCheckedChangeListener((compoundButton, b) -> {
