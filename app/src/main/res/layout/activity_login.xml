@@ -1,74 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/Vinho"
+
     android:orientation="vertical"
-    android:gravity=""
-    android:background="@drawable/background"
     tools:context=".Login">
+
   <ImageView
       android:layout_width="50mm"
       android:layout_height="50mm"
       android:layout_gravity="center_horizontal"
-      android:layout_marginTop="100dp"
-      android:src="@drawable/logo"
-      />
+      android:src="@drawable/logo" />
+
   <EditText
       android:id="@+id/edt_email"
       android:layout_width="50mm"
-      android:layout_height="7mm"
+      android:layout_height="wrap_content"
       android:layout_gravity="center"
+      android:layout_marginTop="10dp"
       android:backgroundTint="@color/white"
       android:hint="E-mail"
       android:inputType="textEmailAddress"
-      android:textColorHint="@color/white"
       android:textColor="@color/white"
-      />
+      android:textColorHint="@color/white" />
+
   <EditText
       android:id="@+id/edt_senha"
       android:layout_width="50mm"
-      android:layout_height="7mm"
+      android:layout_height="wrap_content"
       android:layout_gravity="center"
+      android:layout_marginTop="10dp"
       android:backgroundTint="@color/white"
       android:hint="Senha"
       android:inputType="textPassword"
-      android:textColorHint="@color/white"
       android:textColor="@color/white"
-      />
+      android:textColorHint="@color/white" />
+
   <CheckBox
+      android:id="@+id/ckb_mostrar_senha"
       android:layout_width="30mm"
-      android:layout_height="wrap_content"
+      android:layout_height="20dp"
       android:layout_gravity="center"
+      android:layout_marginTop="10dp"
+      android:layout_marginRight="65dp"
+      android:buttonTint="@color/white"
       android:text="Mostrar senha"
       android:textColor="@color/white"
-      android:buttonTint="@color/white"
-      android:textSize="38px"
-      android:layout_marginRight="65dp"
-      android:id="@+id/ckb_mostrar_senha"
-      />
+      android:textSize="38px" />
 
   <Button
       android:id="@+id/btn_entrar"
       android:layout_width="30mm"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:layout_marginTop="20dp"
-      android:text="Entrar"
-      android:backgroundTint="@color/Yellow"
+      android:layout_marginTop="30dp"
       android:background="@drawable/button_shape"
-      android:textColor="@color/white" />
+      android:backgroundTint="@color/Cinza"
+      android:text="Entrar"
+      android:textColor="@color/black" />
 
   <Button
+      android:id="@+id/btn_cadastrar"
       android:layout_width="30mm"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:textColor="@color/black"
-      android:text="Cadastrar"
       android:layout_marginTop="20dp"
-      android:id="@+id/btn_cadastrar"
-      />
+      android:background="@drawable/button_shape"
+      android:backgroundTint="@color/Cinza"
+      android:text="Cadastrar"
+      android:textColor="@color/black" />
 
 </LinearLayout>

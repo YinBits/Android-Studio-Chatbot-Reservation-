@@ -7,13 +7,15 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity=""
-    android:background="@drawable/background"
+    android:background="@color/Vinho"
     tools:context=".Registro">
+    
+
+
     <ImageView
-        android:layout_width="25mm"
-        android:layout_height="40mm"
+        android:layout_width="240dp"
+        android:layout_height="240dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
         android:src="@drawable/logo"
         />
     <EditText
@@ -106,10 +108,12 @@
         android:id="@+id/ckb_mostrar_senha_registro"
         />
     <Button
-        android:layout_width="120dp"
-        android:layout_height="50dp"
+        android:layout_width="30mm"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/button_shape"
+        android:backgroundTint="@color/Cinza"
         android:text="Entrar"
         android:id="@+id/btn_entrar_registro"/>
 
