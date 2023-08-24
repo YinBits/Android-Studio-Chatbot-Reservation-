@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,12 +8,22 @@
 
     android:orientation="vertical"
     tools:context=".Login">
-
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
   <ImageView
+      android:id="@+id/logo"
       android:layout_width="250dp"
       android:layout_height="250dp"
       android:layout_gravity="center_horizontal"
-      android:src="@drawable/logo" />
+      android:src="@drawable/logo"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      android:layout_marginTop="10dp"
+
+      />
 
   <EditText
       android:id="@+id/edt_email"
@@ -25,7 +35,11 @@
       android:hint="E-mail"
       android:inputType="textEmailAddress"
       android:textColor="@color/white"
-      android:textColorHint="@color/white" />
+      android:textColorHint="@color/white"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/logo"
+      />
 
   <EditText
       android:id="@+id/edt_senha"
@@ -37,7 +51,10 @@
       android:hint="Senha"
       android:inputType="textPassword"
       android:textColor="@color/white"
-      android:textColorHint="@color/white" />
+      android:textColorHint="@color/white"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/edt_email"/>
 
   <CheckBox
       android:id="@+id/ckb_mostrar_senha"
@@ -49,7 +66,11 @@
       android:buttonTint="@color/white"
       android:text="Mostrar senha"
       android:textColor="@color/white"
-      android:textSize="38px" />
+      android:textSize="38px"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/edt_senha"
+      />
 
   <Button
       android:id="@+id/btn_entrar"
@@ -60,7 +81,11 @@
       android:background="@drawable/button_shape"
       android:backgroundTint="@color/Cinza"
       android:text="Entrar"
-      android:textColor="@color/black" />
+      android:textColor="@color/black"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/ckb_mostrar_senha"
+      />
 
   <Button
       android:id="@+id/btn_cadastrar"
@@ -71,6 +96,12 @@
       android:background="@drawable/button_shape"
       android:backgroundTint="@color/Cinza"
       android:text="Cadastrar"
-      android:textColor="@color/black" />
+      android:textColor="@color/black"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/btn_entrar"
+      />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

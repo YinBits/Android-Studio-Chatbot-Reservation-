@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -48,8 +49,8 @@ public class Registro extends AppCompatActivity {
         edt_confirmar_senha = findViewById(R.id.edt_confirmar_senha);
         CheckBox ckb_mostrar_senha_registro = findViewById(R.id.ckb_mostrar_senha_registro);
         Button btn_entrar_registro = findViewById(R.id.btn_entrar_registro);
-        TextView voltar = findViewById(R.id.voltar);
-        ImageView seta = findViewById(R.id.seta);
+        Button btn_voltar = findViewById(R.id.btn_voltar);
+
 
 
         ckb_mostrar_senha_registro.setOnCheckedChangeListener((compoundButton, b) -> {
@@ -89,6 +90,9 @@ public class Registro extends AppCompatActivity {
                 }
             }
         });
+
+        btn_voltar.setOnClickListener(view -> abrirTelaPrincipal());
+
     }
 
     private void uploadData(String nome, String telefone, String dataNascimento, String cpf, String email) {
