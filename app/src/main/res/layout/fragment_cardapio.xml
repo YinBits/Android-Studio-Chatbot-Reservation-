@@ -1,16 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Cardapio">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Cardapio"
+    android:background="@color/Vinho">
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment"
-        android:layout_gravity="center"
-        android:background="@color/Vinho"/>
+        android:layout_width="match_parent">
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CARDÁPIO"
+            android:textColor="@color/white"
+            android:textSize="26dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="20dp"
+            />
+        <TextView
+            android:id="@+id/paragraph"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Selecione a sessão que gostaria!"
+            android:textColor="@color/white"
+            android:textSize="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title"
+            android:layout_marginTop="10dp"
+            />
+
+        <Button
+            android:id="@+id/btn_pratos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="pratos"
+            android:paddingHorizontal="150dp"
+            android:paddingVertical="20dp"
+            android:background="@drawable/button_shape"
+            android:backgroundTint="@color/Yellow"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/paragraph"
+            android:layout_marginTop="50dp"
+            android:textColor="@color/white"
+            android:textSize="16dp"
+            />
+
+        <Button
+            android:id="@+id/btn_porcoes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="porções"
+            android:paddingHorizontal="150dp"
+            android:paddingVertical="20dp"
+            android:background="@drawable/button_shape"
+            android:backgroundTint="@color/Yellow"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_pratos"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/white"
+            android:textSize="16dp"
+            />
+        <Button
+            android:id="@+id/btn_pizzas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="pizzas"
+            android:paddingHorizontal="150dp"
+            android:paddingVertical="20dp"
+            android:background="@drawable/button_shape"
+            android:backgroundTint="@color/Yellow"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_porcoes"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/white"
+            android:textSize="16dp"
+            />
+        <Button
+            android:id="@+id/btn_bebidas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="bebidas"
+            android:paddingHorizontal="150dp"
+            android:paddingVertical="20dp"
+            android:background="@drawable/button_shape"
+            android:backgroundTint="@color/Yellow"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_pizzas"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/white"
+            android:textSize="16dp"
+            />
+
+        <Button
+            android:id="@+id/btn_doces"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="doces"
+            android:paddingHorizontal="150dp"
+            android:paddingVertical="20dp"
+            android:background="@drawable/button_shape"
+            android:backgroundTint="@color/Yellow"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_bebidas"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/white"
+            android:textSize="16dp"
+            />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</ScrollView>
