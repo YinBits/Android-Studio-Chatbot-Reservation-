@@ -33,7 +33,7 @@ public class Cardapio extends Fragment {
             }
         });
 
-        Button buttonPorcoes = rootView.findViewById(R.id.btn_porcoes);
+        Button buttonPorcoes = rootView.findViewById(R.id.btn_porcao);
         buttonPorcoes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -41,7 +41,7 @@ public class Cardapio extends Fragment {
             }
         });
 
-        Button buttonPizzas = rootView.findViewById(R.id.btn_pizzas);
+        Button buttonPizzas = rootView.findViewById(R.id.btn_pizza);
         buttonPizzas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
