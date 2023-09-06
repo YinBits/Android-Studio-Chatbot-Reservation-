@@ -1,64 +1,119 @@
 package com.example.tina;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Chatbot#newInstance} factory method to
- * create an instance of this fragment.
- */
+import androidx.fragment.app.Fragment;
+
+import java.io.IOException;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 public class Chatbot extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private EditText userInputEditText;
+    private TextView chatTextView;
+    private final OkHttpClient httpClient = new OkHttpClient();
+    private static final String OPENAI_API_KEY = "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";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public Chatbot() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Chatbot.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static Chatbot newInstance(String param1, String param2) {
-        Chatbot fragment = new Chatbot();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    private boolean isProcessingMessage = false; // Adicione esta variável de controle
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_chatbot, container, false);
+        View view = inflater.inflate(R.layout.fragment_chatbot, container, false);
+
+        userInputEditText = view.findViewById(R.id.userInputEditText);
+        chatTextView = view.findViewById(R.id.chatTextView);
+        Button sendButton = view.findViewById(R.id.sendButton);
+
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMessage();
+            }
+        });
+
+        return view;
+    }
+
+
+
+    private void sendMessage() {
+        // Verifique se já estamos processando uma mensagem
+        if (isProcessingMessage) {
+            return;
+        }
+
+        // Defina a flag para indicar que estamos processando uma mensagem
+        isProcessingMessage = true;
+
+        String userMessage = userInputEditText.getText().toString();
+
+        // Enviar a mensagem do usuário para o chatbot e obter a resposta da API do ChatGPT
+        String botResponse = generateChatbotResponse(userMessage);
+
+        // Atualizar a exibição do chat com a resposta do chatbot
+        updateChatView(userMessage, botResponse);
+
+        // Limpar a caixa de entrada de texto
+        userInputEditText.setText("");
+
+        // Restaure a flag após o processamento
+        isProcessingMessage = false;
+    }
+
+    private String generateChatbotResponse(String userMessage) {
+        try {
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+            // Configurar a conversa inicial
+            String json = "{\"messages\": ["
+                    + "{\"role\": \"system\", \"content\": \"You are a chatbot that speaks like Shakespeare.\"},"
+                    + "{\"role\": \"user\", \"content\": \"Olá\"},"
+                    + "{\"role\": \"assistant\", \"content\": \"Gostaria de fazer uma reserva?\"}"
+                    + "]}";
+
+            RequestBody body = RequestBody.create(json, JSON);
+
+            Request request = new Request.Builder()
+                    .url("https://api.openai.com/v1/chat/completions")
+                    .addHeader("Authorization", "Bearer " + OPENAI_API_KEY)
+                    .post(body)
+                    .build();
+
+            // Adicionar mensagens de log para depuração
+            System.out.println("Enviando mensagem para o ChatGPT: " + json);
+
+            Response response = httpClient.newCall(request).execute();
+
+            if (!response.isSuccessful()) {
+                throw new IOException("Código de resposta não foi bem-sucedido: " + response.code());
+            }
+
+            String responseBody = response.body().string();
+
+            // Processar a resposta e retornar a parte relevante
+            // Você deve tratar adequadamente a resposta da API aqui
+            return responseBody;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Erro ao se comunicar com o chatbot: " + e.getMessage();
+        }
+    }
+
+
+    private void updateChatView(String userMessage, String botResponse) {
+        String currentChat = chatTextView.getText().toString();
+        String newChat = currentChat + "\nYou: " + userMessage + "\nBot: " + botResponse + "\n";
+        chatTextView.setText(newChat);
     }
 }
