@@ -10,10 +10,16 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class Chatbot extends Fragment {
 
     private EditText userInputEditText;
     private TextView chatTextView;
+
+    private List<String> greetings = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -23,6 +29,9 @@ public class Chatbot extends Fragment {
         userInputEditText = view.findViewById(R.id.userInputEditText);
         chatTextView = view.findViewById(R.id.chatTextView);
         Button sendButton = view.findViewById(R.id.sendButton);
+
+        greetings.add("Olá");
+        greetings.add("Oi");
 
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -36,29 +45,37 @@ public class Chatbot extends Fragment {
 
     private void sendMessage() {
         String userMessage = userInputEditText.getText().toString();
-
-        // Aqui você pode implementar a lógica para responder com base na mensagem do usuário
         String botResponse = getBotResponse(userMessage);
 
-        // Atualizar a exibição do chat com a resposta do chatbot
-        updateChatView("You", userMessage);
-        updateChatView("Bot", botResponse);
+        updateChatView("Você", userMessage);
+        updateChatView("Tina", botResponse);
 
         userInputEditText.setText("");
     }
 
     private String getBotResponse(String userMessage) {
-        // Implemente a lógica para gerar uma resposta com base na mensagem do usuário
-        // Aqui você pode usar condicionais, banco de dados, ou qualquer método de geração de respostas
-
-        // Por exemplo, uma resposta simples com base na mensagem do usuário:
-        if (userMessage.contains("olá")) {
-            return "Olá! Como posso ajudar você?";
-        } else if (userMessage.contains("como vai")) {
-            return "Estou bem, obrigado! E você?";
-        } else {
-            return "Desculpe, não entendi. Pode reformular sua pergunta?";
+        // Verificar se a mensagem do usuário é uma saudação
+        if (isGreeting(userMessage.toLowerCase())) {
+            return getRandomGreeting();
         }
+
+        // Implementar outras respostas com base na mensagem do usuário
+        return "Desculpe, não entendi. Como posso ajudar?";
+    }
+
+    private boolean isGreeting(String message) {
+        for (String greeting : greetings) {
+            if (message.contains(greeting.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String getRandomGreeting() {
+        Random random = new Random();
+        int index = random.nextInt(greetings.size());
+        return greetings.get(index);
     }
 
     private void updateChatView(String sender, String message) {
