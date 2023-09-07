@@ -10,21 +10,10 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import java.io.IOException;
-
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 public class Chatbot extends Fragment {
 
     private EditText userInputEditText;
     private TextView chatTextView;
-    private final OkHttpClient httpClient = new OkHttpClient();
-    private static final String OPENAI_API_KEY = "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";
-
-    private boolean isProcessingMessage = false; // Adicione esta variável de controle
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,75 +34,36 @@ public class Chatbot extends Fragment {
         return view;
     }
 
-
-
     private void sendMessage() {
-        // Verifique se já estamos processando uma mensagem
-        if (isProcessingMessage) {
-            return;
-        }
-
-        // Defina a flag para indicar que estamos processando uma mensagem
-        isProcessingMessage = true;
-
         String userMessage = userInputEditText.getText().toString();
 
-        // Enviar a mensagem do usuário para o chatbot e obter a resposta da API do ChatGPT
-        String botResponse = generateChatbotResponse(userMessage);
+        // Aqui você pode implementar a lógica para responder com base na mensagem do usuário
+        String botResponse = getBotResponse(userMessage);
 
         // Atualizar a exibição do chat com a resposta do chatbot
-        updateChatView(userMessage, botResponse);
+        updateChatView("You", userMessage);
+        updateChatView("Bot", botResponse);
 
-        // Limpar a caixa de entrada de texto
         userInputEditText.setText("");
-
-        // Restaure a flag após o processamento
-        isProcessingMessage = false;
     }
 
-    private String generateChatbotResponse(String userMessage) {
-        try {
-            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private String getBotResponse(String userMessage) {
+        // Implemente a lógica para gerar uma resposta com base na mensagem do usuário
+        // Aqui você pode usar condicionais, banco de dados, ou qualquer método de geração de respostas
 
-            // Configurar a conversa inicial
-            String json = "{\"messages\": ["
-                    + "{\"role\": \"system\", \"content\": \"You are a chatbot that speaks like Shakespeare.\"},"
-                    + "{\"role\": \"user\", \"content\": \"Olá\"},"
-                    + "{\"role\": \"assistant\", \"content\": \"Gostaria de fazer uma reserva?\"}"
-                    + "]}";
-
-            RequestBody body = RequestBody.create(json, JSON);
-
-            Request request = new Request.Builder()
-                    .url("https://api.openai.com/v1/chat/completions")
-                    .addHeader("Authorization", "Bearer " + OPENAI_API_KEY)
-                    .post(body)
-                    .build();
-
-            // Adicionar mensagens de log para depuração
-            System.out.println("Enviando mensagem para o ChatGPT: " + json);
-
-            Response response = httpClient.newCall(request).execute();
-
-            if (!response.isSuccessful()) {
-                throw new IOException("Código de resposta não foi bem-sucedido: " + response.code());
-            }
-
-            String responseBody = response.body().string();
-
-            // Processar a resposta e retornar a parte relevante
-            // Você deve tratar adequadamente a resposta da API aqui
-            return responseBody;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Erro ao se comunicar com o chatbot: " + e.getMessage();
+        // Por exemplo, uma resposta simples com base na mensagem do usuário:
+        if (userMessage.contains("olá")) {
+            return "Olá! Como posso ajudar você?";
+        } else if (userMessage.contains("como vai")) {
+            return "Estou bem, obrigado! E você?";
+        } else {
+            return "Desculpe, não entendi. Pode reformular sua pergunta?";
         }
     }
 
-
-    private void updateChatView(String userMessage, String botResponse) {
+    private void updateChatView(String sender, String message) {
         String currentChat = chatTextView.getText().toString();
-        String newChat = currentChat + "\nYou: " + userMessage + "\nBot: " + botResponse + "\n";
+        String newChat = currentChat + "\n" + sender + ": " + message + "\n";
         chatTextView.setText(newChat);
     }
 }
