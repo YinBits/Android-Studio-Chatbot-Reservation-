@@ -32,6 +32,12 @@ public class Chatbot extends Fragment {
 
     private boolean isMakingReservation = false;
 
+    // Mapa para converter palavras em números para mesas e pessoas
+    private Map<String, Integer> tableAndPeopleWordToNumberMap = new HashMap<>();
+
+    // Mapa para converter palavras em números para horários
+    private Map<String, Integer> timeWordToNumberMap = new HashMap<>();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -57,7 +63,39 @@ public class Chatbot extends Fragment {
         // Mensagem de apresentação quando o fragmento é inflado
         addBotMessage("Tina", "Olá, eu sou o Chatbot Tina e estou aqui para ajudar você a fazer reservas de mesa. Para começar, digite 'reserva' se deseja fazer uma reserva.");
 
+        // Inicializar mapas de conversão para mesas e pessoas e para horários
+        initializeTableAndPeopleWordToNumberMap();
+        initializeTimeWordToNumberMap();
+
         return view;
+    }
+
+    // Função para inicializar o mapa de conversão para mesas e pessoas
+    private void initializeTableAndPeopleWordToNumberMap() {
+        tableAndPeopleWordToNumberMap.put("um", 1);
+        tableAndPeopleWordToNumberMap.put("uma", 1);
+        tableAndPeopleWordToNumberMap.put("dois", 2);
+        tableAndPeopleWordToNumberMap.put("duas", 2);
+        // Adicione mais mapeamentos conforme necessário para mesas e pessoas
+    }
+
+    // Função para inicializar o mapa de conversão para horários
+    private void initializeTimeWordToNumberMap() {
+        timeWordToNumberMap.put("uma", 1);
+        timeWordToNumberMap.put("duas", 2);
+        timeWordToNumberMap.put("três", 3);
+        timeWordToNumberMap.put("quatro", 4);
+        timeWordToNumberMap.put("cinco", 5);
+        timeWordToNumberMap.put("seis", 6);
+        timeWordToNumberMap.put("sete", 7);
+        timeWordToNumberMap.put("oito", 8);
+        timeWordToNumberMap.put("nove", 9);
+        timeWordToNumberMap.put("dez", 10);
+        timeWordToNumberMap.put("onze", 11);
+        timeWordToNumberMap.put("doze", 12);
+        timeWordToNumberMap.put("meio-dia", 12);
+        timeWordToNumberMap.put("meia-noite", 24);
+        // Adicione mais mapeamentos conforme necessário para horários
     }
 
     private void sendMessage() {
@@ -110,11 +148,11 @@ public class Chatbot extends Fragment {
 
             // Com base na pergunta atual, atualize as variáveis de reserva com as respostas do usuário
             if (currentQuestion.contains("horário")) {
-                reservationTime = convertWordToNumber(userMessage);
+                reservationTime = convertWordToNumber(userMessage, timeWordToNumberMap);
             } else if (currentQuestion.contains("quantas pessoas")) {
-                numberOfSeats = convertWordToNumber(userMessage);
+                numberOfSeats = convertWordToNumber(userMessage, tableAndPeopleWordToNumberMap);
             } else if (currentQuestion.contains("número da mesa")) {
-                tableNumber = convertWordToNumber(userMessage);
+                tableNumber = convertWordToNumber(userMessage, tableAndPeopleWordToNumberMap);
             }
 
             // Continue com a próxima pergunta
@@ -124,89 +162,40 @@ public class Chatbot extends Fragment {
     }
 
     // Função para converter palavras em números
-    private String convertWordToNumber(String input) {
-        // Defina um mapeamento de palavras para números
-        Map<String, Integer> wordToNumberMap = new HashMap<>();
-
-        //Número de Mesas
-        wordToNumberMap.put("um", 1);
-        wordToNumberMap.put("uma", 1);
-        wordToNumberMap.put("dois", 2);
-        wordToNumberMap.put("duas", 2);
-        wordToNumberMap.put("três", 3);
-        wordToNumberMap.put("quatro", 4);
-        wordToNumberMap.put("cinco", 5);
-        wordToNumberMap.put("seis", 6);
-        wordToNumberMap.put("sete", 7);
-        wordToNumberMap.put("oito", 8);
-        wordToNumberMap.put("nove", 9);
-        wordToNumberMap.put("dez", 10);
-        wordToNumberMap.put("onze", 11);
-        wordToNumberMap.put("doze", 12);
-        wordToNumberMap.put("treze", 13);
-        wordToNumberMap.put("catorze", 14);
-        wordToNumberMap.put("quatorze", 14);
-        wordToNumberMap.put("quinze", 15);
-        wordToNumberMap.put("dezesseis", 16);
-        wordToNumberMap.put("dezessete", 17);
-        wordToNumberMap.put("meio-dia", 12);
-        wordToNumberMap.put("meia-noite", 24);
-        wordToNumberMap.put("meio dia", 12);
-        wordToNumberMap.put("meia noite", 24);
-        // Adicione mais números conforme necessário
-
-        // Expressões de hora por extenso
-        String[] hourExpressions = {
-                "uma",
-                "duas",
-                "três",
-                "quatro",
-                "cinco",
-                "seis",
-                "sete",
-                "oito",
-                "nove",
-                "dez",
-                "onze",
-                "doze",
-                "meio dia",
-                "meia noite",
-                "meio-dia",
-                "meia-noite",
-        };
-
-        // Adicione mapeamentos para horas por extenso
-        for (int i = 0; i < hourExpressions.length; i++) {
-            wordToNumberMap.put(hourExpressions[i] + " hora da manhã", i + 1);
-            wordToNumberMap.put(hourExpressions[i] + " da manhã", i + 1);
-            wordToNumberMap.put(hourExpressions[i] + " hora da tarde", i + 13); // Horas da tarde começam em 13
-            wordToNumberMap.put(hourExpressions[i] + " da tarde", i + 13); // Horas da tarde começam em 13
-            wordToNumberMap.put(hourExpressions[i] + " hora da noite", i + 19); // Horas da noite começam em 19
-            wordToNumberMap.put(hourExpressions[i] + " da noite", i + 19); // Horas da noite começam em 19
-        }
-
-        // Tente converter a entrada diretamente para um número
+    private String convertWordToNumber(String input, Map<String, Integer> wordToNumberMap) {
+        // Tente converter a entrada diretamente em um número, se possível
         try {
-            int number = Integer.parseInt(input);
-            return String.valueOf(number);
+            int numericValue = Integer.parseInt(input);
+            return String.valueOf(numericValue);
         } catch (NumberFormatException e) {
-            // Se não for um número válido, tente procurar no mapeamento de palavras
+            // A conversão direta falhou, então, divida a entrada em palavras
             String[] words = input.split("\\s+");
-            int result = 0;
 
+            // Inicialize um acumulador para o resultado
+            int result = 0;
+            boolean isAfterNoon = false;
+
+            // Verifique cada palavra e adicione seu valor ao resultado
             for (String word : words) {
                 String lowercaseWord = word.toLowerCase();
 
                 if (wordToNumberMap.containsKey(lowercaseWord)) {
                     result += wordToNumberMap.get(lowercaseWord);
+
+                    // Verifique se a palavra é "hora" e se estamos à tarde
+                    if (lowercaseWord.equals("hora") && isAfterNoon) {
+                        result -= 12; // Subtrai 12 horas para "uma hora" da tarde
+                    }
+                } else if (lowercaseWord.equals("da")) {
+                    // Verifique se a palavra "da" indica que estamos falando de tarde
+                    isAfterNoon = true;
                 }
             }
 
+            // Converta o resultado de volta para uma string
             return String.valueOf(result);
         }
     }
-
-
 
     private void addBotMessage(String sender, String message) {
         // Adicione a mensagem do bot ao chat
