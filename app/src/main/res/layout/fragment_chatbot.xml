@@ -1,40 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    tools:context=".MainActivity">
-
-    <EditText
-        android:id="@+id/userInputEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Digite sua mensagem"
-        android:inputType="text"
-        android:layout_marginBottom="8dp" />
-
-    <Button
-        android:id="@+id/sendButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enviar"
-        android:onClick="sendMessage" />
+    android:layout_height="match_parent">
 
     <ScrollView
+        android:id="@+id/messageScrollView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="16dp">
+        android:layout_height="match_parent"
+        android:layout_above="@+id/userInputLayout">
 
-        <TextView
-            android:id="@+id/chatTextView"
+        <LinearLayout
+            android:id="@+id/messageContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="14sp" />
-
+            android:orientation="vertical" />
     </ScrollView>
-</LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/userInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
+        android:padding="16dp">
+
+
+        <EditText
+            android:id="@+id/userInputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Digite sua mensagem"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/sendButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enviar"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true" />
+    </RelativeLayout>
+</RelativeLayout>
