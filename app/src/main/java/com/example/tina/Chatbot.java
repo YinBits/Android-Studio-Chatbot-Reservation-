@@ -9,9 +9,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
 import androidx.fragment.app.Fragment;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Chatbot extends Fragment {
 
@@ -19,8 +21,13 @@ public class Chatbot extends Fragment {
     private ScrollView messageScrollView;
     private LinearLayout messageContainer;
 
-    // Dicionário de sinônimos para perguntas
-    private Map<String, String> questionSynonyms;
+    private List<String> questions;
+    private int currentQuestionIndex = 0;
+    private String reservationTime = "";
+    private String numberOfSeats = "";
+    private String tableNumber = "";
+
+    private boolean isMakingReservation = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -32,14 +39,6 @@ public class Chatbot extends Fragment {
         messageContainer = view.findViewById(R.id.messageContainer);
         Button sendButton = view.findViewById(R.id.sendButton);
 
-        // Inicialize o dicionário de sinônimos para perguntas
-        questionSynonyms = new HashMap<>();
-        questionSynonyms.put("como você está", "como vai você");
-        questionSynonyms.put("o que você pode fazer", "quais são suas habilidades");
-        questionSynonyms.put("qual é o seu nome", "como você se chama");
-        questionSynonyms.put("você gosta de música", "você curte música");
-        questionSynonyms.put("qual é a sua cor favorita", "sua cor preferida");
-
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -47,9 +46,13 @@ public class Chatbot extends Fragment {
             }
         });
 
+        questions = new ArrayList<>();
+        questions.add("Qual horário você deseja reservar?");
+        questions.add("Quantas pessoas estarão na reserva?");
+        questions.add("Qual é o número da mesa desejada?");
+
         // Mensagem de apresentação quando o fragmento é inflado
-        String botIntroduction = "Olá, eu sou o Chatbot Tina e estou aqui para ajudar você a fazer reservas de mesa.";
-        addMessage("Tina", botIntroduction);
+        addBotMessage("Tina", "Olá, eu sou o Chatbot Tina e estou aqui para ajudar você a fazer reservas de mesa. Para começar, digite 'reserva' se deseja fazer uma reserva.");
 
         return view;
     }
@@ -58,27 +61,69 @@ public class Chatbot extends Fragment {
         String userMessage = userInputEditText.getText().toString().trim();
 
         if (!userMessage.isEmpty()) {
-            // Responder de acordo com a mensagem do usuário
-            String botResponse = getBotResponse(userMessage);
-
-            // Adicionar a mensagem do usuário ao chat
-            addMessage("Você", userMessage);
-
-            // Adicionar a resposta do chatbot ao chat (se houver)
-            if (!botResponse.isEmpty()) {
-                addMessage("Tina", botResponse);
+            if (isMakingReservation) {
+                // Responder de acordo com a mensagem do usuário durante o processo de reserva
+                handleReservation(userMessage);
+            } else {
+                // Verificar se o usuário deseja fazer uma reserva
+                if (userMessage.equalsIgnoreCase("reserva")) {
+                    isMakingReservation = true;
+                    // Iniciar o processo de reserva
+                    askNextQuestion();
+                } else {
+                    // Mensagem de confirmação para repetir a pergunta
+                    addBotMessage("Tina", "Desculpe, não entendi. Você gostaria de fazer uma reserva de mesa? (reserva)");
+                }
             }
 
             userInputEditText.setText("");
-
-            // Rolar para a parte inferior da ScrollView
-            messageScrollView.post(new Runnable() {
-                @Override
-                public void run() {
-                    messageScrollView.fullScroll(View.FOCUS_DOWN);
-                }
-            });
         }
+    }
+
+    private void askNextQuestion() {
+        if (currentQuestionIndex < questions.size()) {
+            addBotMessage("Tina", questions.get(currentQuestionIndex));
+        } else {
+            // Todas as perguntas foram respondidas, você pode enviar os dados para o Firebase aqui
+            // Após o processamento, você pode reiniciar o chatbot ou exibir uma mensagem de conclusão
+            addBotMessage("Tina", "Reserva de mesa concluída! Um e-mail de confirmação será enviado em breve.");
+
+            // Reiniciar o chatbot ou concluir o processo aqui conforme necessário
+            isMakingReservation = false;
+            currentQuestionIndex = 0;
+        }
+    }
+
+    private void handleReservation(String userMessage) {
+        if (currentQuestionIndex < questions.size()) {
+            // Armazenar a resposta do usuário nas variáveis apropriadas com base na pergunta atual
+            String currentQuestion = questions.get(currentQuestionIndex);
+
+            // Com base na pergunta atual, atualize as variáveis de reserva com as respostas do usuário
+            if (currentQuestion.contains("horário")) {
+                reservationTime = userMessage;
+            } else if (currentQuestion.contains("quantas pessoas")) {
+                numberOfSeats = userMessage;
+            } else if (currentQuestion.contains("número da mesa")) {
+                tableNumber = userMessage;
+            }
+
+            // Continue com a próxima pergunta
+            currentQuestionIndex++;
+            askNextQuestion();
+        }
+    }
+
+    private void addBotMessage(String sender, String message) {
+        // Adicione a mensagem do bot ao chat
+        addMessage(sender, message);
+        // Role para a parte inferior da ScrollView
+        messageScrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                messageScrollView.fullScroll(View.FOCUS_DOWN);
+            }
+        });
     }
 
     private void addMessage(String sender, String message) {
@@ -107,42 +152,5 @@ public class Chatbot extends Fragment {
 
         // Adicionar a mensagem ao container
         messageContainer.addView(textView);
-    }
-
-    private String getBotResponse(String userMessage) {
-        // Converter a mensagem do usuário para letras minúsculas para facilitar a correspondência
-        userMessage = userMessage.toLowerCase();
-
-        // Verificar sinônimos para perguntas na mensagem do usuário e fornecer respostas correspondentes
-        for (Map.Entry<String, String> entry : questionSynonyms.entrySet()) {
-            String question = entry.getKey();
-            String synonym = entry.getValue();
-
-            if (userMessage.contains(question) || userMessage.contains(synonym)) {
-                return getResponseForQuestion(question);
-            }
-        }
-
-        // Resposta padrão
-        return "Desculpe, não entendi. Como posso ajudar?";
-    }
-
-    // Função para obter respostas para perguntas específicas
-    private String getResponseForQuestion(String question) {
-        // Lógica para retornar respostas com base na pergunta
-        if (question.equals("como você está")) {
-            return "Estou bem, obrigado por perguntar!";
-        } else if (question.equals("o que você pode fazer")) {
-            return "Eu sou um chatbot e posso responder a perguntas, contar piadas e muito mais!";
-        } else if (question.equals("qual é o seu nome")) {
-            return "Meu nome é Tina, sou um chatbot.";
-        } else if (question.equals("você gosta de música")) {
-            return "Eu não tenho preferências musicais, mas a música é maravilhosa!";
-        } else if (question.equals("qual é a sua cor favorita")) {
-            return "Eu sou apenas um programa de computador, então não tenho uma cor favorita.";
-        }
-
-        // Adicione mais respostas para outras perguntas conforme necessário
-        return "Desculpe, não tenho uma resposta para essa pergunta específica.";
     }
 }

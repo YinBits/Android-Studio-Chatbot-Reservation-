@@ -24,7 +24,6 @@
         android:layout_marginBottom="50dp"
         android:padding="16dp">
 
-
         <EditText
             android:id="@+id/userInputEditText"
             android:layout_width="match_parent"
@@ -39,5 +38,27 @@
             android:text="Enviar"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true" />
+
+        <!-- Campos do formulário -->
+        <EditText
+            android:id="@+id/reservationTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Horário da reserva"
+            android:visibility="gone" />
+
+        <EditText
+            android:id="@+id/numberOfSeats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Número de lugares"
+            android:visibility="gone" />
+
+        <EditText
+            android:id="@+id/tableNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Número da mesa"
+            android:visibility="gone" />
     </RelativeLayout>
 </RelativeLayout>
