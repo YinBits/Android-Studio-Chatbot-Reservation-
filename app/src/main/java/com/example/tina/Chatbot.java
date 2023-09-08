@@ -1,6 +1,7 @@
 package com.example.tina;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,8 @@ import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Chatbot extends Fragment {
 
@@ -82,6 +85,7 @@ public class Chatbot extends Fragment {
 
     private void askNextQuestion() {
         if (currentQuestionIndex < questions.size()) {
+            addMessage("Você", userInputEditText.getText().toString().trim()); // Adiciona a resposta do usuário à direita
             addBotMessage("Tina", questions.get(currentQuestionIndex));
         } else {
             // Todas as perguntas foram respondidas, você pode enviar os dados para o Firebase aqui
@@ -91,27 +95,46 @@ public class Chatbot extends Fragment {
             // Reiniciar o chatbot ou concluir o processo aqui conforme necessário
             isMakingReservation = false;
             currentQuestionIndex = 0;
+
+            // Adicione logs para verificar os dados coletados
+            Log.d("DadosColetados", "Horário: " + reservationTime);
+            Log.d("DadosColetados", "Número de Lugares: " + numberOfSeats);
+            Log.d("DadosColetados", "Número da Mesa: " + tableNumber);
         }
     }
 
     private void handleReservation(String userMessage) {
         if (currentQuestionIndex < questions.size()) {
             // Armazenar a resposta do usuário nas variáveis apropriadas com base na pergunta atual
-            String currentQuestion = questions.get(currentQuestionIndex);
+            String currentQuestion = questions.get(currentQuestionIndex).toLowerCase(); // Converter para letras minúsculas
+
+            // Extrair apenas números da mensagem do usuário
+            String extractedNumbers = extractNumbers(userMessage);
 
             // Com base na pergunta atual, atualize as variáveis de reserva com as respostas do usuário
             if (currentQuestion.contains("horário")) {
-                reservationTime = userMessage;
+                reservationTime = extractedNumbers;
             } else if (currentQuestion.contains("quantas pessoas")) {
-                numberOfSeats = userMessage;
+                numberOfSeats = extractedNumbers;
             } else if (currentQuestion.contains("número da mesa")) {
-                tableNumber = userMessage;
+                tableNumber = extractedNumbers;
             }
 
             // Continue com a próxima pergunta
             currentQuestionIndex++;
             askNextQuestion();
         }
+    }
+
+    // Função para extrair apenas números de uma string
+    private String extractNumbers(String input) {
+        Pattern pattern = Pattern.compile("\\d+");
+        Matcher matcher = pattern.matcher(input);
+        StringBuilder extractedNumbers = new StringBuilder();
+        while (matcher.find()) {
+            extractedNumbers.append(matcher.group());
+        }
+        return extractedNumbers.toString();
     }
 
     private void addBotMessage(String sender, String message) {
