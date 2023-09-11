@@ -26,6 +26,7 @@ public class Chatbot extends Fragment {
 
     private List<String> questions;
     private int currentQuestionIndex = 0;
+    private String reservationDate = "";
     private String reservationTime = "";
     private String numberOfSeats = "";
     private String tableNumber = "";
@@ -56,6 +57,7 @@ public class Chatbot extends Fragment {
         });
 
         questions = new ArrayList<>();
+        questions.add("Qual data você deseja fazer a reserva? (DD/MM/AAAA)");
         questions.add("Qual horário você deseja reservar?");
         questions.add("Quantas pessoas estarão na reserva?");
         questions.add("Qual é o número da mesa desejada?");
@@ -135,6 +137,7 @@ public class Chatbot extends Fragment {
             currentQuestionIndex = 0;
 
             // Adicione logs para verificar os dados coletados
+            Log.d("DadosColetados", "Data: " + reservationDate);
             Log.d("DadosColetados", "Horário: " + reservationTime);
             Log.d("DadosColetados", "Número de Lugares: " + numberOfSeats);
             Log.d("DadosColetados", "Número da Mesa: " + tableNumber);
@@ -147,7 +150,9 @@ public class Chatbot extends Fragment {
             String currentQuestion = questions.get(currentQuestionIndex).toLowerCase(); // Converter para letras minúsculas
 
             // Com base na pergunta atual, atualize as variáveis de reserva com as respostas do usuário
-            if (currentQuestion.contains("horário")) {
+            if (currentQuestion.contains("data")) {
+                reservationDate = userMessage; // Armazene a data da reserva
+            } else if (currentQuestion.contains("horário")) {
                 reservationTime = convertWordToNumber(userMessage, timeWordToNumberMap);
             } else if (currentQuestion.contains("quantas pessoas")) {
                 numberOfSeats = convertWordToNumber(userMessage, tableAndPeopleWordToNumberMap);
@@ -161,6 +166,7 @@ public class Chatbot extends Fragment {
         }
     }
 
+    //Rever esta função
     // Função para converter palavras em números
     private String convertWordToNumber(String input, Map<String, Integer> wordToNumberMap) {
         // Tente converter a entrada diretamente em um número, se possível
