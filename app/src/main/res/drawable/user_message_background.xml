@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <corners android:radius="8dp" />
-    <solid android:color="#3F51B5" /> <!-- Cor de fundo do usuário, você pode alterar essa cor -->
+    <corners android:radius="20dp" />
+
+    <solid android:color="@color/Vinho" /> <!-- Cor de fundo do usuário, você pode alterar essa cor -->
     <padding
         android:left="16dp"
         android:top="16dp"

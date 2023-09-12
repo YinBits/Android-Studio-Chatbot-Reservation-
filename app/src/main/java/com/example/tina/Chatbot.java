@@ -153,7 +153,7 @@ public class Chatbot extends Fragment {
             if (currentQuestion.contains("data")) {
                 reservationDate = userMessage; // Armazene a data da reserva
             } else if (currentQuestion.contains("horário")) {
-                reservationTime = convertWordToNumber(userMessage, timeWordToNumberMap);
+                reservationTime = convertWordTo24HourFormat(userMessage, timeWordToNumberMap);
             } else if (currentQuestion.contains("quantas pessoas")) {
                 numberOfSeats = convertWordToNumber(userMessage, tableAndPeopleWordToNumberMap);
             } else if (currentQuestion.contains("número da mesa")) {
@@ -202,6 +202,32 @@ public class Chatbot extends Fragment {
             return String.valueOf(result);
         }
     }
+    private String convertWordTo24HourFormat(String input, Map<String, Integer> wordToNumberMap) {
+        String[] words = input.split("\\s+");
+        int result = 0;
+        boolean isAfterNoon = false;
+
+        for (String word : words) {
+            String lowercaseWord = word.toLowerCase();
+
+            if (wordToNumberMap.containsKey(lowercaseWord)) {
+                result += wordToNumberMap.get(lowercaseWord);
+            } else if (lowercaseWord.equals("manhã")) {
+                // Se "manhã" estiver presente, defina isAfterNoon como false
+                isAfterNoon = false;
+            } else if (lowercaseWord.equals("noite")) {
+                // Se "noite" estiver presente, defina isAfterNoon como true
+                isAfterNoon = true;
+            }
+        }
+
+        // Se for à tarde (noite), adicione 12 horas para converter para 24 horas
+        if (isAfterNoon) {
+            result += 12;
+        }
+
+        return String.valueOf(result);
+    }
 
     private void addBotMessage(String sender, String message) {
         // Adicione a mensagem do bot ao chat
@@ -224,20 +250,29 @@ public class Chatbot extends Fragment {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
-        int margin = getResources().getDimensionPixelSize(R.dimen.message_margin);
-        layoutParams.setMargins(margin, margin, margin, margin);
+
+        // Definir margens padrão de 10
+        int defaultMargin = getResources().getDimensionPixelSize(R.dimen.message_margin);
+        layoutParams.setMargins(defaultMargin, defaultMargin, defaultMargin, defaultMargin);
 
         // Alinhar a mensagem do usuário à direita e do chatbot à esquerda
         layoutParams.gravity = sender.equals("Você") ? android.view.Gravity.END : android.view.Gravity.START;
 
         // Definir o background com base no remetente
         if (sender.equals("Você")) {
+            // Margem direita de 100 para mensagens do usuário
+            layoutParams.setMargins(100, defaultMargin, defaultMargin, defaultMargin);
             textView.setBackgroundResource(R.drawable.user_message_background);
         } else {
+            // Margem esquerda de 100 para mensagens do chatbot
+            layoutParams.setMargins(defaultMargin, defaultMargin, 100, defaultMargin);
             textView.setBackgroundResource(R.drawable.chatbot_message_background);
         }
 
         textView.setLayoutParams(layoutParams);
+
+        // Cor do TEXT
+        textView.setTextColor(getResources().getColor(android.R.color.white));
 
         // Adicionar a mensagem ao container
         messageContainer.addView(textView);

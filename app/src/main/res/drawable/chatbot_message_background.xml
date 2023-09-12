@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <corners android:radius="8dp" />
-    <solid android:color="#4CAF50" /> <!-- Cor de fundo do chatbot, você pode alterar essa cor -->
+    <corners android:radius="20dp" />
+    <solid android:color="@color/VinhoClaro" /> <!-- Cor de fundo do chatbot, você pode alterar essa cor -->
+
     <padding
         android:left="16dp"
         android:top="16dp"
