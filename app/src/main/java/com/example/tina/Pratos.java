@@ -1,30 +1,46 @@
 package com.example.tina;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Pratos extends Fragment {
+
+    private RecyclerView recyclerView;
+    private CardapioAdapter cardapioAdapter;
+    private List<MenuItem> pratosList;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_pratos, container, false);
 
-        // Configurações e lógica específicas do PratosFragment
+        recyclerView = rootView.findViewById(R.id.gridlayout); // Certifique-se de substituir pelo ID correto
+
+        pratosList = new ArrayList<>();
+        pratosList.add(new MenuItem("Pratos 2", "Descrição da pratos 2", 4.99, ""));
+        pratosList.add(new MenuItem("Pratos 2", "Descrição da pratos 2", 4.99, ""));
+        pratosList.add(new MenuItem("Pratos 1", "Descrição da pratos 1", 5.99, ""));
+        pratosList.add(new MenuItem("Pratos 2", "Descrição da pratos 2", 4.99, ""));
+        pratosList.add(new MenuItem("Pratos 2", "Descrição da pratos 2", 4.99, ""));
+
+        cardapioAdapter = new CardapioAdapter(pratosList);
+        recyclerView.setAdapter(cardapioAdapter);
+
+        // Configurando um GridLayoutManager com 2 colunas
+        int numberOfColumns = 2;
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numberOfColumns));
 
         Button buttonVoltarCardapio = rootView.findViewById(R.id.btn_voltar);
         buttonVoltarCardapio.setOnClickListener(new View.OnClickListener() {
@@ -40,7 +56,7 @@ public class Pratos extends Fragment {
     private void openCardapio() {
         Cardapio cardapio = new Cardapio();
         requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, cardapio) // assuming 'fragment_container' is the container for your fragments
+                .replace(R.id.fragment_container, cardapio)
                 .addToBackStack(null)
                 .commit();
     }
