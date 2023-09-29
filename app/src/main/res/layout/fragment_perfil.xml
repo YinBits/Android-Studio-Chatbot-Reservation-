@@ -44,13 +44,14 @@
      android:background="@drawable/container_user"
      app:layout_constraintEnd_toEndOf="parent"
      app:layout_constraintStart_toStartOf="parent"
-     app:layout_constraintTop_toTopOf="parent" />
+     app:layout_constraintTop_toTopOf="parent"/>
 
- <ImageView
+ <de.hdodenhof.circleimageview.CircleImageView
      android:id="@+id/imgProfile"
-     android:layout_width="100dp"
-     android:layout_height="100dp"
+     android:layout_width="150dp"
+     android:layout_height="150dp"
      android:src="@drawable/ic_user"
+     android:background="@drawable/container_user"
      app:layout_constraintBottom_toBottomOf="@id/container_user"
      app:layout_constraintEnd_toEndOf="@id/container_user"
      app:layout_constraintStart_toStartOf="@id/container_user"
