@@ -57,6 +57,51 @@
         android:layout_marginLeft="8dp"
         />
 
+    <View
+        android:id="@+id/container_notification"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/container_notificatiion"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:backgroundTint="#D9D9D9"
+        />
+    <ImageView
+
+        android:id="@+id/notification"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_notification"
+        app:layout_constraintBottom_toBottomOf="@id/container_notification"
+        app:layout_constraintEnd_toEndOf="@id/container_notification"
+        app:layout_constraintStart_toStartOf="@id/container_notification"
+        app:layout_constraintTop_toTopOf="@id/container_notification" />
+
+    <View
+        android:id="@+id/search_bar"
+        android:layout_width="292dp"
+        android:layout_height="50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/container_user"
+        android:layout_marginLeft="10dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="70dp"
+        android:background="@drawable/container_search"
+        />
+
+    <View
+        android:id="@+id/container_filter"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/search_bar"
+        android:layout_marginRight="10dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/container_notificatiion"
+        android:backgroundTint="#D9D9D9"
+        />
 
 
 
