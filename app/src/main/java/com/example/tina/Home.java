@@ -1,8 +1,6 @@
 package com.example.tina;
 
-import android.app.Activity;
 import android.content.ContentResolver;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,12 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -39,9 +34,7 @@ public class Home extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        mAuth = FirebaseAuth.getInstance();
-        Button btn_logout = view.findViewById(R.id.btn_logout); // Use view.findViewById
-        Button btn_save = view.findViewById(R.id.btn_save); // Use view.findViewById
+
         ImageView imgProfile = view.findViewById(R.id.imgProfile);
 
         databaseReference.get().addOnSuccessListener(dataSnapshot -> {
