@@ -99,7 +99,7 @@ public class Registro extends AppCompatActivity {
         if (indiceArroba != -1) {
             String novoEmail = email.substring(0, indiceArroba).replace(".", "-");
 
-            FirebaseDatabase.getInstance().getReference("Tina").child(novoEmail).setValue(dataClass).addOnCompleteListener(task -> {
+            FirebaseDatabase.getInstance().getReference("Usuário").child(novoEmail).setValue(dataClass).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Toast.makeText(Registro.this, "Usuário cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
                 }

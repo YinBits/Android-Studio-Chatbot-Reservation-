@@ -22,23 +22,23 @@ import com.google.firebase.storage.StorageReference;
 
 public class Home extends Fragment {
 
-    private FirebaseAuth mAuth;
-    private Uri imageUri;
     final private StorageReference storageReference = FirebaseStorage.getInstance().getReference();
     final private String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
     final private String user = userEmail.substring(0, userEmail.indexOf('@')).replace(".", "-");
-    final private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Tina").child(user);
+    final private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Usuário").child(user);
 
     //Botão Logout
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-
         ImageView imgProfile = view.findViewById(R.id.imgProfile);
 
         databaseReference.get().addOnSuccessListener(dataSnapshot -> {
             Object imageURL = dataSnapshot.child("ProfileImage").child("imageURL").getValue();
+            if (imageURL != null) {
+                Glide.with(this).load(imageURL.toString()).into(imgProfile);
+            }
             String nome = dataSnapshot.child("nome").getValue().toString();
 
 

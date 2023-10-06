@@ -13,8 +13,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
-    private FirebaseAuth mAuth;
-
     private BottomNavigationView bottomNavigationView;
 
 
@@ -30,8 +28,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
@@ -53,26 +49,12 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
-
-
-
-
-
-
-        // Carrega o fragment inicial
-        loadFragment(new Home());
+            loadFragment(new Home());
     }
-
-
-
-
-
-
 
 
     @Override
     protected void onStart() {
-        
         super.onStart();
         FirebaseUser currentuser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentuser == null) {

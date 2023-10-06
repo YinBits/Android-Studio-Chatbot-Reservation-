@@ -141,6 +141,14 @@ public class Chatbot extends Fragment {
             Log.d("DadosColetados", "Horário: " + reservationTime);
             Log.d("DadosColetados", "Número de Lugares: " + numberOfSeats);
             Log.d("DadosColetados", "Número da Mesa: " + tableNumber);
+
+            List teste = new ArrayList<>();
+            teste.add(0, reservationDate);
+            teste.add(1, reservationTime);
+            teste.add(2, numberOfSeats);
+            teste.add(3, tableNumber);
+
+            Log.i("teste", teste.toString());
         }
     }
 
@@ -277,4 +285,5 @@ public class Chatbot extends Fragment {
         // Adicionar a mensagem ao container
         messageContainer.addView(textView);
     }
+
 }
