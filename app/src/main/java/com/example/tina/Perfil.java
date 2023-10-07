@@ -16,12 +16,16 @@ import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -29,91 +33,105 @@ public class Perfil extends Fragment {
 
     private FirebaseAuth mAuth;
     private Uri imageUri;
-    final private StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-    final private String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-    final private String user = userEmail.substring(0, userEmail.indexOf('@')).replace(".", "-");
-    final private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Tina").child(user);
+    private StorageReference storageReference;
+    private DatabaseReference databaseReference;
+    private ImageView imgProfile;
+    private TextView txtNome, txtEmail, txtData, txtTelefone;
 
-    //Botão Logout
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_perfil, container, false);
 
         mAuth = FirebaseAuth.getInstance();
-        Button btn_logout = view.findViewById(R.id.btn_logout); // Use view.findViewById
-        Button btn_save = view.findViewById(R.id.btn_save); // Use view.findViewById
-        ImageView imgProfile = view.findViewById(R.id.imgProfile);
+        storageReference = FirebaseStorage.getInstance().getReference();
+        String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        String user = userEmail.substring(0, userEmail.indexOf('@')).replace(".", "-");
+        databaseReference = FirebaseDatabase.getInstance().getReference("Usuário").child(user);
 
-        databaseReference.get().addOnSuccessListener(dataSnapshot -> {
-            Object imageURL = dataSnapshot.child("ProfileImage").child("imageURL").getValue();
-            String nome = dataSnapshot.child("nome").getValue().toString();
-            String email = dataSnapshot.child("email").getValue().toString();
-            String dataNascimento = dataSnapshot.child("dataNascimento").getValue().toString();
-            String telefone = dataSnapshot.child("telefone").getValue().toString();
+        imgProfile = view.findViewById(R.id.imgProfile);
+        txtNome = view.findViewById(R.id.textNome);
+        txtEmail = view.findViewById(R.id.textEmail);
+        txtData = view.findViewById(R.id.textDate);
+        txtTelefone = view.findViewById(R.id.textTelefone);
 
-            TextView txtNome = view.findViewById(R.id.textNome);
-            TextView txtEmail = view.findViewById(R.id.textEmail);
-            TextView txtData = view.findViewById(R.id.textDate);
-            TextView txtTelefone = view.findViewById(R.id.textTelefone);
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String nome = dataSnapshot.child("nome").getValue(String.class);
+                    String email = dataSnapshot.child("email").getValue(String.class);
+                    String dataNascimento = dataSnapshot.child("dataNascimento").getValue(String.class);
+                    String telefone = dataSnapshot.child("telefone").getValue(String.class);
 
-            txtNome.setText(nome);
-            txtEmail.setText(email);
-            txtData.setText(dataNascimento);
-            txtTelefone.setText(telefone);
+                    txtNome.setText(nome != null ? nome : "");
+                    txtEmail.setText(email != null ? email : "");
+                    txtData.setText(dataNascimento != null ? dataNascimento : "");
+                    txtTelefone.setText(telefone != null ? telefone : "");
 
-            if (imageURL != null) {
-                Glide.with(this).load(imageURL.toString()).into(imgProfile);
+                    Object imageURL = dataSnapshot.child("ProfileImage").child("imageURL").getValue();
+                    if (imageURL != null) {
+                        Glide.with(requireContext()).load(imageURL.toString()).into(imgProfile);
+                    }
+                } else {
+                    // O nó no banco de dados não existe ou está vazio
+                    // Trate esse caso de acordo com a lógica do seu aplicativo
+                    // Aqui, os campos de texto serão deixados em branco e a imagem será mantida como está
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("Erro", "Falha ao acessar o banco de dados: " + databaseError.getMessage());
             }
         });
 
-        btn_logout.setOnClickListener(v -> {
-            mAuth.signOut();
-            Intent intent = new Intent(getActivity(), Login.class); // Use getActivity() para obter a atividade
-            startActivity(intent);
-            getActivity().finish(); // Finaliza a atividade atual
-        });
+        Button btnLogout = view.findViewById(R.id.btn_logout);
+        Button btnSave = view.findViewById(R.id.btn_save);
 
-        ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == Activity.RESULT_OK) {
-                Intent data = result.getData();
-                imageUri = data.getData();
-                imgProfile.setImageURI(imageUri);
-            } else {
-                Log.i("erro", "erro");
-            }
-        });
-
-        imgProfile.setOnClickListener(view1 -> {
-            Intent photoPicker = new Intent();
-            photoPicker.setAction(Intent.ACTION_GET_CONTENT);
-            photoPicker.setType("image/*");
-            activityResultLauncher.launch(photoPicker);
-        });
-
-        btn_save.setOnClickListener(a -> {
-            uploadToFirebase(imageUri);
-        });
+        btnLogout.setOnClickListener(v -> logoutUser());
+        imgProfile.setOnClickListener(v -> openImagePicker());
+        btnSave.setOnClickListener(v -> saveProfileImage());
 
         return view;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    private void logoutUser() {
+        mAuth.signOut();
+        Intent intent = new Intent(requireActivity(), Login.class);
+        startActivity(intent);
+        requireActivity().finish();
     }
 
-    private void uploadToFirebase(Uri uri) {
-        final StorageReference imageReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(uri));
-        imageReference.putFile(uri).addOnSuccessListener(taskSnapshot -> imageReference.getDownloadUrl().addOnSuccessListener(uri1 -> {
-            DataClass dataClass = new DataClass(null, null, null, null, null, uri1.toString());
-            databaseReference.child("ProfileImage").setValue(dataClass);
-        })).addOnFailureListener(e -> {
-            Log.i("erro upload", e.toString());
-        });
+    private void openImagePicker() {
+        Intent photoPicker = new Intent(Intent.ACTION_GET_CONTENT);
+        photoPicker.setType("image/*");
+        activityResultLauncher.launch(photoPicker);
+    }
+
+    private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() == Activity.RESULT_OK) {
+            Intent data = result.getData();
+            imageUri = data.getData();
+            imgProfile.setImageURI(imageUri);
+        } else {
+            Log.i("erro", "erro");
+        }
+    });
+
+    private void saveProfileImage() {
+        if (imageUri != null) {
+            final StorageReference imageReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
+            imageReference.putFile(imageUri).addOnSuccessListener(taskSnapshot -> imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                DataClass dataClass = new DataClass(null, null, null, null, null, uri.toString());
+                databaseReference.child("ProfileImage").setValue(dataClass);
+            })).addOnFailureListener(e -> {
+                Log.e("erro upload", e.toString());
+            });
+        }
     }
 
     private String getFileExtension(Uri fileUri) {
-        ContentResolver contentResolver = this.getContext().getContentResolver();
+        ContentResolver contentResolver = requireContext().getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(contentResolver.getType(fileUri));
     }

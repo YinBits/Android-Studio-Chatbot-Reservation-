@@ -10,9 +10,12 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
-
+    DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("Usuário");
+    String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
     private BottomNavigationView bottomNavigationView;
 
 
@@ -51,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
         });
             loadFragment(new Home());
     }
+
+
 
 
     @Override

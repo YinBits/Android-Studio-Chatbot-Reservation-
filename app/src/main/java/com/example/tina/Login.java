@@ -1,7 +1,5 @@
 package com.example.tina;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,7 +10,10 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
 
@@ -34,11 +35,16 @@ public class Login extends AppCompatActivity {
         Button btn_cadastrar = findViewById(R.id.btn_cadastrar);
         CheckBox ckb_mostrar_senha = findViewById(R.id.ckb_mostrar_senha);
 
-        //ao clicar no botão vai fazer oq precisa ser feito
+        // Verificar se o usuário já está logado
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            abrirTelaPrincipal();
+            finish(); // Feche a LoginActivity para que o usuário não possa voltar para ela pressionando o botão "Voltar".
+        }
+
         btn_entrar.setOnClickListener(view -> {
             String loginEmail = edt_email.getText().toString();
             String loginSenha = edt_senha.getText().toString();
-
 
             if (!TextUtils.isEmpty(loginEmail) || !TextUtils.isEmpty(loginSenha)) {
                 mAuth.signInWithEmailAndPassword(loginEmail, loginSenha).addOnCompleteListener(task -> {
