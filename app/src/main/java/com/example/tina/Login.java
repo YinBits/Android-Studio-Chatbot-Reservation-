@@ -70,7 +70,7 @@ public class Login extends AppCompatActivity {
     }
 
     private void abrirTelaRegistro() {
-        Intent intent = new Intent(Login.this, Registro.class);
+        Intent intent = new Intent(Login.this, Registro.c  lass);
         startActivity(intent);
         finish();
     }
