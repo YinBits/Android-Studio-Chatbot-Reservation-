@@ -13,10 +13,14 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class Chatbot extends Fragment {
 
@@ -31,17 +35,24 @@ public class Chatbot extends Fragment {
     private String numberOfSeats = "";
     private String tableNumber = "";
 
+    private final String userEmail = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail();
+    private final String user;
+
+    {
+        assert userEmail != null;
+        user = userEmail.substring(0, userEmail.indexOf('@')).replace(".", "-");
+    }
+
     private boolean isMakingReservation = false;
 
     // Mapa para converter palavras em números para mesas e pessoas
-    private Map<String, Integer> tableAndPeopleWordToNumberMap = new HashMap<>();
+    private final Map<String, Integer> tableAndPeopleWordToNumberMap = new HashMap<>();
 
     // Mapa para converter palavras em números para horários
-    private Map<String, Integer> timeWordToNumberMap = new HashMap<>();
+    private final Map<String, Integer> timeWordToNumberMap = new HashMap<>();
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chatbot, container, false);
 
         userInputEditText = view.findViewById(R.id.userInputEditText);
@@ -49,12 +60,7 @@ public class Chatbot extends Fragment {
         messageContainer = view.findViewById(R.id.messageContainer);
         Button sendButton = view.findViewById(R.id.sendButton);
 
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendMessage();
-            }
-        });
+        sendButton.setOnClickListener(v -> sendMessage());
 
         questions = new ArrayList<>();
         questions.add("Qual data você deseja fazer a reserva? (DD/MM/AAAA)");
@@ -136,19 +142,24 @@ public class Chatbot extends Fragment {
             isMakingReservation = false;
             currentQuestionIndex = 0;
 
-            // Adicione logs para verificar os dados coletados
-            Log.d("DadosColetados", "Data: " + reservationDate);
-            Log.d("DadosColetados", "Horário: " + reservationTime);
-            Log.d("DadosColetados", "Número de Lugares: " + numberOfSeats);
-            Log.d("DadosColetados", "Número da Mesa: " + tableNumber);
+            List<Object> reserva = new ArrayList<>(List.of(reservationDate, reservationTime, numberOfSeats, tableNumber));
 
-            List teste = new ArrayList<>();
-            teste.add(0, reservationDate);
-            teste.add(1, reservationTime);
-            teste.add(2, numberOfSeats);
-            teste.add(3, tableNumber);
+            // Enviar dados para o Firebase
+            /*
+                Atualmente ele ta enviando pro Firebase de forma que fique:
+                Reservas -> Usuário efetuando reserva -> Informações da reserva organizadas em uma list(array)
+                Na list as informações estão organizadas da seguinte forma:
+                    0 - Data da reserva
+                    1 - Horário da reserva
+                    2 - Número de pessoas
+                    3 - Número da mesa
+                Para alterar esta ordem só mexer na List acima
+                Para alterar como é organizado no Firebase só mudar abaixo, por exemplo, para separar por mesas pode mudar o
+                .child(user) para .child(tableNumber) e então na lista mudar a mesa para o usuário
 
-            Log.i("teste", teste.toString());
+                Para ver todas as mesas reservadas você pode tentar puxar tudo de Reservas ou só filtrar as lists
+             */
+            FirebaseDatabase.getInstance().getReference().child("Reservas").child(user).setValue(reserva).addOnSuccessListener(e -> Log.i("DadosColetados", "Dados enviados com sucesso!")).addOnFailureListener(e -> Log.i("DadosColetados", "Falha ao enviar dados: " + e.getMessage()));
         }
     }
 
@@ -210,6 +221,7 @@ public class Chatbot extends Fragment {
             return String.valueOf(result);
         }
     }
+
     private String convertWordTo24HourFormat(String input, Map<String, Integer> wordToNumberMap) {
         String[] words = input.split("\\s+");
         int result = 0;
@@ -241,12 +253,7 @@ public class Chatbot extends Fragment {
         // Adicione a mensagem do bot ao chat
         addMessage(sender, message);
         // Role para a parte inferior da ScrollView
-        messageScrollView.post(new Runnable() {
-            @Override
-            public void run() {
-                messageScrollView.fullScroll(View.FOCUS_DOWN);
-            }
-        });
+        messageScrollView.post(() -> messageScrollView.fullScroll(View.FOCUS_DOWN));
     }
 
     private void addMessage(String sender, String message) {
@@ -254,10 +261,7 @@ public class Chatbot extends Fragment {
         textView.setText(message);
 
         // Definir margens
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
         // Definir margens padrão de 10
         int defaultMargin = getResources().getDimensionPixelSize(R.dimen.message_margin);
