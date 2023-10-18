@@ -14,7 +14,9 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +31,7 @@ public class Chatbot extends Fragment {
     private LinearLayout messageContainer;
 
     private List<String> questions;
+    private FirebaseUser currentUser;
     private int currentQuestionIndex = 0;
     private String reservationDate = "";
     private String reservationTime = "";
@@ -54,7 +57,7 @@ public class Chatbot extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chatbot, container, false);
-
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         userInputEditText = view.findViewById(R.id.userInputEditText);
         messageScrollView = view.findViewById(R.id.messageScrollView);
         messageContainer = view.findViewById(R.id.messageContainer);
@@ -142,7 +145,16 @@ public class Chatbot extends Fragment {
             isMakingReservation = false;
             currentQuestionIndex = 0;
 
-            List<Object> reserva = new ArrayList<>(List.of(reservationDate, reservationTime, numberOfSeats, tableNumber));
+            // Criar uma instância da sua classe Reserva e preencher os dados
+            Reserva reserva = new Reserva();
+            reserva.setNomeCliente(currentUser.getDisplayName()); // Obtenha o nome do usuário autenticado
+            reserva.setDataReserva(reservationDate);
+            reserva.setHorarioReserva(reservationTime);
+            reserva.setNumeroMesa(tableNumber);
+            reserva.setNumeroPessoas(numberOfSeats);
+
+            List<Object> reservaList = new ArrayList<>();
+            reservaList.add(reserva);
 
             // Enviar dados para o Firebase
             /*
@@ -159,7 +171,10 @@ public class Chatbot extends Fragment {
 
                 Para ver todas as mesas reservadas você pode tentar puxar tudo de Reservas ou só filtrar as lists
              */
-            FirebaseDatabase.getInstance().getReference().child("Reservas").child(user).setValue(reserva).addOnSuccessListener(e -> Log.i("DadosColetados", "Dados enviados com sucesso!")).addOnFailureListener(e -> Log.i("DadosColetados", "Falha ao enviar dados: " + e.getMessage()));
+            FirebaseDatabase.getInstance().getReference().child("Reservas").child(user).setValue(reserva).addOnSuccessListener(
+                    e -> Log.i("DadosColetados", "Dados enviados com sucesso!"))
+                    .addOnFailureListener(e -> Log.i("DadosColetados", "Falha ao enviar dados: " + e.getMessage()));
+
         }
     }
 
@@ -185,7 +200,6 @@ public class Chatbot extends Fragment {
         }
     }
 
-    //Rever esta função
     // Função para converter palavras em números
     private String convertWordToNumber(String input, Map<String, Integer> wordToNumberMap) {
         // Tente converter a entrada diretamente em um número, se possível
@@ -283,11 +297,17 @@ public class Chatbot extends Fragment {
 
         textView.setLayoutParams(layoutParams);
 
-        // Cor do TEXT
+        // Cor do texto
         textView.setTextColor(getResources().getColor(android.R.color.white));
 
         // Adicionar a mensagem ao container
         messageContainer.addView(textView);
     }
 
+    // Função para adicionar o nome do usuário autenticado aos dados da reserva
+    private void addUserToReservation(Reserva reserva) {
+        if (currentUser != null) {
+            reserva.setNomeCliente(currentUser.getDisplayName());
+        }
+    }
 }
