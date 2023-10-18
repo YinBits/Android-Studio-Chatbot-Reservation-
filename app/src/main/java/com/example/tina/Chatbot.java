@@ -14,13 +14,20 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -115,7 +122,26 @@ public class Chatbot extends Fragment {
         if (!userMessage.isEmpty()) {
             if (isMakingReservation) {
                 // Responder de acordo com a mensagem do usuário durante o processo de reserva
-                handleReservation(userMessage);
+                if (currentQuestionIndex == 0) {
+                    // O usuário está fornecendo a data da reserva
+                    reservationDate = formatUserInputDate(userMessage);
+                } else if (currentQuestionIndex == 1) {
+                    // O usuário está fornecendo o horário da reserva
+                    reservationTime = convertWordTo24HourFormat(userMessage, timeWordToNumberMap);
+                } else if (currentQuestionIndex == 2) {
+                    // O usuário está fornecendo o número de pessoas
+                    numberOfSeats = convertWordToNumber(userMessage, tableAndPeopleWordToNumberMap);
+                } else if (currentQuestionIndex == 3) {
+                    // O usuário está fornecendo o número da mesa
+                    tableNumber = convertWordToNumber(userMessage, tableAndPeopleWordToNumberMap);
+
+                    // Agora que temos todas as informações, verifique a disponibilidade
+                    checkTableAvailability(reservationDate, reservationTime);
+                }
+
+                // Continue com a próxima pergunta
+                currentQuestionIndex++;
+                askNextQuestion();
             } else {
                 // Verificar se o usuário deseja fazer uma reserva
                 if (userMessage.equalsIgnoreCase("reserva")) {
@@ -132,6 +158,7 @@ public class Chatbot extends Fragment {
         }
     }
 
+
     private void askNextQuestion() {
         if (currentQuestionIndex < questions.size()) {
             addMessage("Você", userInputEditText.getText().toString().trim()); // Adiciona a resposta do usuário à direita
@@ -147,34 +174,36 @@ public class Chatbot extends Fragment {
 
             // Criar uma instância da sua classe Reserva e preencher os dados
             Reserva reserva = new Reserva();
-            reserva.setNomeCliente(currentUser.getDisplayName()); // Obtenha o nome do usuário autenticado
+            // Adicione o nome do usuário à reserva
+            addUserToReservation(reserva);
             reserva.setDataReserva(reservationDate);
             reserva.setHorarioReserva(reservationTime);
             reserva.setNumeroMesa(tableNumber);
             reserva.setNumeroPessoas(numberOfSeats);
 
-            List<Object> reservaList = new ArrayList<>();
-            reservaList.add(reserva);
-
             // Enviar dados para o Firebase
-            /*
-                Atualmente ele ta enviando pro Firebase de forma que fique:
-                Reservas -> Usuário efetuando reserva -> Informações da reserva organizadas em uma list(array)
-                Na list as informações estão organizadas da seguinte forma:
-                    0 - Data da reserva
-                    1 - Horário da reserva
-                    2 - Número de pessoas
-                    3 - Número da mesa
-                Para alterar esta ordem só mexer na List acima
-                Para alterar como é organizado no Firebase só mudar abaixo, por exemplo, para separar por mesas pode mudar o
-                .child(user) para .child(tableNumber) e então na lista mudar a mesa para o usuário
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Usuário").child(user);
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // Obtém o nome do usuário da tabela "Usuário"
+                    String clientName = dataSnapshot.child("nome").getValue(String.class);
+                    if (clientName != null) {
+                        // Defina o nome do cliente na reserva
+                        reserva.setNomeCliente(clientName);
+                    }
 
-                Para ver todas as mesas reservadas você pode tentar puxar tudo de Reservas ou só filtrar as lists
-             */
-            FirebaseDatabase.getInstance().getReference().child("Reservas").child(user).setValue(reserva).addOnSuccessListener(
-                    e -> Log.i("DadosColetados", "Dados enviados com sucesso!"))
-                    .addOnFailureListener(e -> Log.i("DadosColetados", "Falha ao enviar dados: " + e.getMessage()));
+                    // Enviar a reserva para o Firebase
+                    FirebaseDatabase.getInstance().getReference().child("Reservas").child(user).setValue(reserva)
+                            .addOnSuccessListener(e -> Log.i("DadosColetados", "Dados enviados com sucesso!"))
+                            .addOnFailureListener(e -> Log.i("DadosColetados", "Falha ao enviar dados: " + e.getMessage()));
+                }
 
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("DadosColetados", "Erro ao obter dados do usuário: " + databaseError.getMessage());
+                }
+            });
         }
     }
 
@@ -185,7 +214,8 @@ public class Chatbot extends Fragment {
 
             // Com base na pergunta atual, atualize as variáveis de reserva com as respostas do usuário
             if (currentQuestion.contains("data")) {
-                reservationDate = userMessage; // Armazene a data da reserva
+                // Formate a data para o formato "DD-MM-AAAA" removendo barras
+                reservationDate = formatUserInputDate(userMessage);
             } else if (currentQuestion.contains("horário")) {
                 reservationTime = convertWordTo24HourFormat(userMessage, timeWordToNumberMap);
             } else if (currentQuestion.contains("quantas pessoas")) {
@@ -199,6 +229,22 @@ public class Chatbot extends Fragment {
             askNextQuestion();
         }
     }
+
+    // Função para formatar a data no formato "DD-MM-AAAA" e remover barras
+    private String formatUserInputDate(String userInput) {
+        // Remova as barras da data
+        userInput = userInput.replace("/", "");
+
+        // Verifique se a entrada tem o formato correto (DDMMAAAA)
+        if (userInput.matches("\\d{8}")) {
+            // Formate a data como DD-MM-AAAA
+            return userInput.substring(0, 2) + "-" + userInput.substring(2, 4) + "-" + userInput.substring(4);
+        } else {
+            // Caso a entrada não esteja no formato correto, retorne uma string vazia ou outra indicação de erro
+            return "";
+        }
+    }
+
 
     // Função para converter palavras em números
     private String convertWordToNumber(String input, Map<String, Integer> wordToNumberMap) {
@@ -306,8 +352,65 @@ public class Chatbot extends Fragment {
 
     // Função para adicionar o nome do usuário autenticado aos dados da reserva
     private void addUserToReservation(Reserva reserva) {
-        if (currentUser != null) {
+        if (currentUser != null && currentUser.getDisplayName() != null) {
             reserva.setNomeCliente(currentUser.getDisplayName());
         }
     }
+
+    // Função para converter a entrada da pessoa em um objeto de data do Firebase
+    private Date convertUserInputToDate(String userInput) {
+        try {
+            // Substitua as barras por traços no formato da data
+            userInput = userInput.replace("/", "-");
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+            return dateFormat.parse(userInput);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void checkTableAvailability(String date, String time) {
+        DatabaseReference reservasRef = FirebaseDatabase.getInstance().getReference("Reservas");
+        reservasRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<String> mesasOcupadas = new ArrayList<>();
+
+                // Itera sobre as reservas para verificar mesas ocupadas
+                for (DataSnapshot reservaSnapshot : dataSnapshot.getChildren()) {
+                    String numeroMesa = reservaSnapshot.child("numeroMesa").getValue(String.class);
+                    String dataReserva = reservaSnapshot.child("dataReserva").getValue(String.class);
+                    String horarioReserva = reservaSnapshot.child("horarioReserva").getValue(String.class);
+
+                    if (numeroMesa != null && dataReserva != null && horarioReserva != null &&
+                            numeroMesa.equals(tableNumber) && dataReserva.equals(date) && horarioReserva.equals(time)) {
+                        mesasOcupadas.add(numeroMesa);
+                    }
+                }
+
+                if (mesasOcupadas.isEmpty()) {
+                    // Todas as mesas estão disponíveis
+                    addBotMessage("Tina", "Todas as mesas estão disponíveis para a data e horário selecionados.");
+                } else {
+                    // Algumas mesas estão ocupadas, mostre a lista
+                    addBotMessage("Tina", "As seguintes mesas já estão ocupadas para a data e horário selecionados:");
+                    for (String mesa : mesasOcupadas) {
+                        addBotMessage("Tina", mesa);
+                    }
+                    addBotMessage("Tina", "Fora as mesas ocupadas, qual mesa você deseja?");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("Chatbot", "Erro ao acessar o banco de dados: " + databaseError.getMessage());
+            }
+        });
+    }
+
 }
+
+
+
