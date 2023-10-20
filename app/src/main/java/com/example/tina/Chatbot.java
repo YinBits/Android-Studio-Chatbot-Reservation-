@@ -61,6 +61,9 @@ public class Chatbot extends Fragment {
     // Mapa para converter palavras em números para horários
     private final Map<String, Integer> timeWordToNumberMap = new HashMap<>();
 
+    private boolean isChoosingAnotherTable = false;
+    private String chosenTableNumber = "";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chatbot, container, false);
@@ -137,6 +140,15 @@ public class Chatbot extends Fragment {
 
                     // Agora que temos todas as informações, verifique a disponibilidade
                     checkTableAvailability(reservationDate, reservationTime);
+                } else if (isChoosingAnotherTable) {
+                    // O usuário está escolhendo outra mesa
+                    // Aqui você pode adicionar lógica para capturar o número da mesa
+                    // Verifique se o usuário forneceu um número de mesa válido e armazene-o na variável chosenTableNumber
+                    // Certifique-se de validar a entrada do usuário, como verificar se corresponde a uma mesa disponível
+
+                    // Após capturar a escolha da mesa, você pode continuar com o processo de reserva ou tomar a ação apropriada
+                    isChoosingAnotherTable = false;
+                    continueWithReservation();
                 }
 
                 // Continue com a próxima pergunta
@@ -156,6 +168,18 @@ public class Chatbot extends Fragment {
 
             userInputEditText.setText("");
         }
+    }
+    private void continueWithReservation() {
+        // Continue com o processo de reserva aqui
+        // Você pode usar a variável chosenTableNumber para saber qual mesa o usuário escolheu
+        // Certifique-se de validar a escolha da mesa e processar a reserva de acordo
+
+        // Por exemplo, você pode adicionar chosenTableNumber à sua instância de Reserva:
+        Reserva reserva = new Reserva();
+        reserva.setNumeroMesa(chosenTableNumber);
+
+        // Após concluir o processo, envie os dados da reserva para o Firebase ou faça a ação apropriada
+        registerReservationInDatabase();
     }
 
 
@@ -391,21 +415,81 @@ public class Chatbot extends Fragment {
                 }
 
                 if (mesasOcupadas.isEmpty()) {
-                    // Todas as mesas estão disponíveis
-                    addBotMessage("Tina", "Todas as mesas estão disponíveis para a data e horário selecionados.");
+                    // A mesa está disponível, então você pode prosseguir com o cadastro
+                    registerReservationInDatabase();
                 } else {
                     // Algumas mesas estão ocupadas, mostre a lista
-                    addBotMessage("Tina", "As seguintes mesas já estão ocupadas para a data e horário selecionados:");
+                    StringBuilder mensagem = new StringBuilder("As seguintes mesas já estão ocupadas para a data e horário selecionados:");
                     for (String mesa : mesasOcupadas) {
-                        addBotMessage("Tina", mesa);
+                        mensagem.append("\n").append(mesa);
                     }
-                    addBotMessage("Tina", "Fora as mesas ocupadas, qual mesa você deseja?");
+                    mensagem.append("\nFora as mesas ocupadas, qual mesa você deseja?");
+                    addBotMessage("Tina", mensagem.toString());
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.e("Chatbot", "Erro ao acessar o banco de dados: " + databaseError.getMessage());
+            }
+        });
+    }
+
+    private void registerReservationInDatabase() {
+        // Criar uma instância da sua classe Reserva e preencher os dados
+        Reserva reserva = new Reserva();
+        // Adicione o nome do usuário à reserva
+        addUserToReservation(reserva);
+        reserva.setDataReserva(reservationDate);
+        reserva.setHorarioReserva(reservationTime);
+        reserva.setNumeroMesa(tableNumber);
+        reserva.setNumeroPessoas(numberOfSeats);
+
+        // Enviar dados para o Firebase
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Usuário").child(user);
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Obtém o nome do usuário da tabela "Usuário"
+                String clientName = dataSnapshot.child("nome").getValue(String.class);
+                if (clientName != null) {
+                    // Defina o nome do cliente na reserva
+                    reserva.setNomeCliente(clientName);
+                }
+
+                // Enviar a reserva para o Firebase
+                DatabaseReference reservaRef = FirebaseDatabase.getInstance().getReference("Reservas").child(user);
+                reservaRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        // Verifique se a mesa ainda está disponível para a data e horário selecionados
+                        if (dataSnapshot.exists()) {
+                            // A mesa não está mais disponível, então pergunte ao usuário qual mesa ele deseja
+                            addBotMessage("Tina", "A mesa " + tableNumber + " não está mais disponível para a data e horário selecionados. Qual mesa você deseja?");
+                        } else {
+                            // A mesa está disponível, então cadastre a reserva no banco
+                            reservaRef.setValue(reserva)
+                                    .addOnSuccessListener(e -> {
+                                        // Reserva cadastrada com sucesso
+                                        addBotMessage("Tina", "Reserva de mesa concluída! Um e-mail de confirmação será enviado em breve.");
+                                        // Reinicie o chatbot ou conclua o processo conforme necessário
+                                        isMakingReservation = false;
+                                        currentQuestionIndex = 0;
+                                    })
+                                    .addOnFailureListener(e -> Log.i("DadosColetados", "Falha ao enviar dados: " + e.getMessage()));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e("Chatbot", "Erro ao verificar a disponibilidade da mesa: " + databaseError.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("DadosColetados", "Erro ao obter dados do usuário: " + databaseError.getMessage());
             }
         });
     }
