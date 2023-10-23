@@ -2,7 +2,9 @@ package com.example.tina;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.widget.Button;
@@ -28,6 +30,67 @@ public class Registro extends AppCompatActivity {
     private EditText edt_confirmar_senha;
     private FirebaseAuth mAuth;
 
+    public class MaskUtils {
+
+        public static TextWatcher insertMask(final EditText editText, final String mask) {
+            return new TextWatcher() {
+                private boolean isUpdating = false;
+                private String current = "";
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if (isUpdating) {
+                        isUpdating = false;
+                        return;
+                    }
+
+                    String text = s.toString();
+                    String cleanText = text.replaceAll("[^0-9]*", "");
+
+                    isUpdating = true;
+
+                    String formatted = applyMask(cleanText, mask);
+                    current = formatted;
+                    editText.setText(formatted);
+                    editText.setSelection(formatted.length());
+                }
+
+                private String applyMask(String value, String mask) {
+                    if (value.length() > mask.length()) {
+                        value = value.substring(0, mask.length());
+                    }
+
+                    int valueIndex = 0;
+                    StringBuilder maskedValue = new StringBuilder();
+
+                    for (int i = 0; i < mask.length(); i++) {
+                        char maskChar = mask.charAt(i);
+                        if (maskChar == '#') {
+                            if (valueIndex < value.length()) {
+                                maskedValue.append(value.charAt(valueIndex));
+                                valueIndex++;
+                            } else {
+                                break;
+                            }
+                        } else {
+                            maskedValue.append(maskChar);
+                        }
+                    }
+
+                    return maskedValue.toString();
+                }
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+            };
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,15 +99,21 @@ public class Registro extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         edt_nome = findViewById(R.id.edt_nome);
-        edt_telefone = findViewById(R.id.edt_telefone);
-        edt_data_nascimento = findViewById(R.id.edt_data_nascimento);
-        edt_CPF = findViewById(R.id.edt_CPF);
         edt_email_registro = findViewById(R.id.edt_email_registro);
         edt_senha_registro = findViewById(R.id.edt_senha_registro);
         edt_confirmar_senha = findViewById(R.id.edt_confirmar_senha);
         CheckBox ckb_mostrar_senha_registro = findViewById(R.id.ckb_mostrar_senha_registro);
         Button btn_entrar_registro = findViewById(R.id.btn_entrar_registro);
         Button btn_voltar = findViewById(R.id.btn_voltar);
+
+        EditText edt_telefone = findViewById(R.id.edt_telefone);
+        edt_telefone.addTextChangedListener(MaskUtils.insertMask(edt_telefone, "(##) #####-####"));
+
+        EditText edt_data_nascimento = findViewById(R.id.edt_data_nascimento);
+        edt_data_nascimento.addTextChangedListener(MaskUtils.insertMask(edt_data_nascimento, "##/##/####"));
+
+        EditText edt_CPF = findViewById(R.id.edt_CPF);
+        edt_CPF.addTextChangedListener(MaskUtils.insertMask(edt_CPF, "###.###.###-##"));
 
 
 

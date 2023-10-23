@@ -2,6 +2,7 @@ package com.example.tina;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,6 +38,13 @@ public class Perfil extends Fragment {
     private DatabaseReference databaseReference;
     private ImageView imgProfile;
     private TextView txtNome, txtEmail, txtData, txtTelefone;
+    private Context context;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.context = context;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,7 +65,7 @@ public class Perfil extends Fragment {
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
+                if (dataSnapshot.exists() && context != null) {
                     String nome = dataSnapshot.child("nome").getValue(String.class);
                     String email = dataSnapshot.child("email").getValue(String.class);
                     String dataNascimento = dataSnapshot.child("dataNascimento").getValue(String.class);
@@ -70,7 +78,7 @@ public class Perfil extends Fragment {
 
                     Object imageURL = dataSnapshot.child("ProfileImage").child("imageURL").getValue();
                     if (imageURL != null) {
-                        Glide.with(requireContext()).load(imageURL.toString()).into(imgProfile);
+                        Glide.with(context).load(imageURL.toString()).into(imgProfile);
                     }
                 } else {
                     // O nó no banco de dados não existe ou está vazio
@@ -120,18 +128,24 @@ public class Perfil extends Fragment {
 
     private void saveProfileImage() {
         if (imageUri != null) {
+            // Adicione logs para verificar se esse bloco está sendo executado
+            Log.d("saveProfileImage", "Iniciando upload da imagem");
+
             final StorageReference imageReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
-            imageReference.putFile(imageUri).addOnSuccessListener(taskSnapshot -> imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-                DataClass dataClass = new DataClass(null, null, null, null, null, uri.toString());
-                databaseReference.child("ProfileImage").setValue(dataClass);
-            })).addOnFailureListener(e -> {
+            imageReference.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
+                imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                    DataClass dataClass = new DataClass(null, null, null, null, null, uri.toString());
+                    databaseReference.child("ProfileImage").setValue(dataClass);
+                    Log.d("saveProfileImage", "Imagem enviada e URL salva");
+                });
+            }).addOnFailureListener(e -> {
                 Log.e("erro upload", e.toString());
             });
         }
     }
 
     private String getFileExtension(Uri fileUri) {
-        ContentResolver contentResolver = requireContext().getContentResolver();
+        ContentResolver contentResolver = context.getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(contentResolver.getType(fileUri));
     }
