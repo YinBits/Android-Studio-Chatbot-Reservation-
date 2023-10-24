@@ -92,9 +92,12 @@
         />
 
     <ImageView
+        android:id="@+id/search_badge"
         android:layout_width="40dp"
         android:layout_height="50dp"
-        android:src="@android:color/background_dark"/>
+        android:src="sear"
+        />
+
     <EditText
         android:id="@+id/textSearch_bar"
         android:layout_width="250dp"
@@ -120,9 +123,18 @@
         android:backgroundTint="#D9D9D9"
         />
 
-    <ViewSwitcher
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    <ImageView
+    android:layout_width="50dp"
+    android:layout_height="50dp"
+    android:src="@drawable/ic_launcher_background"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="@id/search_bar"
+    android:layout_marginRight="10dp"
+    android:layout_alignParentBottom="true"
+    android:backgroundTint="#D9D9D9"
+    />
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
