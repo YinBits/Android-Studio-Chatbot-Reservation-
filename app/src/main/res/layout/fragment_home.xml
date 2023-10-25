@@ -95,7 +95,12 @@
         android:id="@+id/search_badge"
         android:layout_width="40dp"
         android:layout_height="50dp"
-        android:src="sear"
+        android:src="@drawable/ic_search"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/container_user"
+        android:layout_marginLeft="10dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="70dp"
         />
 
     <EditText
@@ -104,11 +109,12 @@
         android:layout_height="50dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/container_user"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="50dp"
         android:layout_alignParentTop="true"
         android:layout_marginTop="65dp"
         android:text="Procure seu prato..."
         android:textColor="#c1c1c1"
+
         />
 
     <View
@@ -119,14 +125,13 @@
         app:layout_constraintTop_toTopOf="@id/search_bar"
         android:layout_marginRight="10dp"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/container_notificatiion"
         android:backgroundTint="#D9D9D9"
         />
 
     <ImageView
     android:layout_width="50dp"
     android:layout_height="50dp"
-    android:src="@drawable/ic_launcher_background"
+    android:src="@drawable/ic_filter"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toTopOf="@id/search_bar"
     android:layout_marginRight="10dp"
