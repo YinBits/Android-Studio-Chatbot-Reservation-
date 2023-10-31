@@ -1,64 +1,107 @@
 package com.example.tina;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.CalendarView;
+import android.widget.ListView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Eventos#newInstance} factory method to
- * create an instance of this fragment.
- */
+import androidx.fragment.app.Fragment;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class Eventos extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public Eventos() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Eventos.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static Eventos newInstance(String param1, String param2) {
-        Eventos fragment = new Eventos();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    private CalendarView calendarView;
+    private ListView listView;
+    private ArrayAdapter<String> adapter;
+    private Map<String, List<String>> eventsByDate;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_eventos, container, false);
+        View view = inflater.inflate(R.layout.fragment_eventos, container, false);
+
+        calendarView = view.findViewById(R.id.calendarView);
+        listView = view.findViewById(R.id.listView);
+
+        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1);
+        listView.setAdapter(adapter);
+
+        eventsByDate = new HashMap<>();
+
+        // Initialize Firebase
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference eventosRef = database.getReference("eventos");
+
+        eventosRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                eventsByDate.clear();
+                adapter.clear();
+
+                for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
+                    Evento evento = eventSnapshot.getValue(Evento.class);
+                    if (evento != null) {
+                        String date = evento.getDate();
+                        String eventInfo = evento.getTitle() + ": " + evento.getDescription();
+
+                        // Check if the date already exists in the map
+                        if (eventsByDate.containsKey(date)) {
+                            eventsByDate.get(date).add(eventInfo);
+                        } else {
+                            List<String> events = new ArrayList<>();
+                            events.add(eventInfo);
+                            eventsByDate.put(date, events);
+                        }
+                    }
+                }
+
+                // Populate the ListView with events for the selected date
+                long selectedDate = calendarView.getDate();
+                String selectedDateString = // Convert selectedDate to a suitable format;
+
+                if (eventsByDate.containsKey(selectedDateString)) {
+                    List<String> events = eventsByDate.get(selectedDateString);
+                    adapter.addAll(events);
+                }
+
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle errors here
+            }
+        });
+
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
+                // Handle date change and update the ListView
+                // You can use the eventsByDate map to retrieve events for the selected date
+                // and update the adapter accordingly.
+                String selectedDate = null; // Convert year, month, and dayOfMonth to a suitable date format;
+                if (eventsByDate.containsKey(selectedDate)) {
+                    List<String> events = eventsByDate.get(selectedDate);
+                    adapter.clear();
+                    adapter.addAll(events);
+                }
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        return view;
     }
 }
