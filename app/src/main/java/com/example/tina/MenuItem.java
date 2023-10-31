@@ -1,54 +1,65 @@
 package com.example.tina;
 
 public class MenuItem {
-    private String name;
-    private String description;
-    private double price;
-    private String imageUrl;
+    private String nome;
+    private String descricao;
+    private Double preco;
+    private String imagem;
+
+    private String categoria;
 
     //Constructor, Getters and Setters
 
-
-    public MenuItem(String name, String description, double price, String imageUrl) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.imageUrl = imageUrl;
+//Contructor
+    public MenuItem(String nome, String descricao, double preco, String imagem) {
+        this.nome = nome;
+        this.descricao = descricao;
+        this.preco = preco;
+        this.imagem = imagem;
+        this.categoria = categoria;
     }
 
-    //Getter and Setter
+    //Getter and Setters
 
 
-    public String getName() {
-        return name;
+    public String getNome() {
+        return nome;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDescricao() {
+        return descricao;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
-    public double getPrice() {
-        return price;
+    public double getPreco() {
+        return preco;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setPreco(double preco) {
+        this.preco = preco;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getImagem() {
+        return imagem;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImage(String imagem) {
+        this.imagem = imagem;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
     }
 }
 

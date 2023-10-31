@@ -12,6 +12,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,23 +25,19 @@ public class Porcoes extends Fragment {
 
     private RecyclerView recyclerView;
     private CardapioAdapter cardapioAdapter;
-    private List<MenuItem> porcoesList;
+    private List<MenuItem> pratosList;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_porcoes, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_pratos, container, false);
 
-        recyclerView = rootView.findViewById(R.id.gridlayout); // Certifique-se de substituir pelo ID correto
+        recyclerView = rootView.findViewById(R.id.gridlayout);
 
-        porcoesList = new ArrayList<>();
-        porcoesList.add(new MenuItem("Pratos 2", "Descrição da pratos 2", 4.99, ""));
-        porcoesList.add(new MenuItem("Pratos 2", "Descrição da pratos 2", 4.99, ""));
-        porcoesList.add(new MenuItem("Pratos 1", "Descrição da pratos 1", 5.99, ""));
-        porcoesList.add(new MenuItem("Pratos 2", "Descrição da pratos 2", 4.99, ""));
-        porcoesList.add(new MenuItem("Pratos 2", "Descrição da pratos 2", 4.99, ""));
+        pratosList = new ArrayList<>();
 
-        cardapioAdapter = new CardapioAdapter(porcoesList);
+        // Inicialize o adaptador com a lista vazia
+        cardapioAdapter = new CardapioAdapter(pratosList);
         recyclerView.setAdapter(cardapioAdapter);
 
         // Configurando um GridLayoutManager com 2 colunas
@@ -50,7 +52,40 @@ public class Porcoes extends Fragment {
             }
         });
 
+        // Carregue os itens do Firebase Realtime Database
+        loadItemsFromFirebase();
+
         return rootView;
+    }
+
+    private void loadItemsFromFirebase() {
+        DatabaseReference cardapioRef = FirebaseDatabase.getInstance().getReference("Cardapio");
+        cardapioRef.orderByChild("categoria").equalTo("Porcoes").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                pratosList.clear(); // Limpe a lista existente
+
+                for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
+                    String nome = itemSnapshot.child("nome").getValue(String.class);
+                    String descricao = itemSnapshot.child("descricao").getValue(String.class);
+                    double preco = itemSnapshot.child("preco").getValue(Double.class);
+                    String imagem = itemSnapshot.child("imagem").getValue(String.class);
+
+                    if (nome != null && descricao != null &&  imagem != null) {
+                        pratosList.add(new MenuItem(nome, descricao, preco, imagem));
+                    }
+                }
+
+                // Notificar o adapter de que os dados foram atualizados
+                cardapioAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Lida com erros ao acessar o banco de dados
+                // Aqui você pode tratar erros, como exibir uma mensagem de erro para o usuário
+            }
+        });
     }
 
     private void openCardapio() {

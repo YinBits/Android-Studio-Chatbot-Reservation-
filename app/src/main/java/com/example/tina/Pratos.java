@@ -12,8 +12,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tina.Cardapio;
-import com.example.tina.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -71,10 +69,10 @@ public class Pratos extends Fragment {
                     String nome = itemSnapshot.child("nome").getValue(String.class);
                     String descricao = itemSnapshot.child("descricao").getValue(String.class);
                     double preco = itemSnapshot.child("preco").getValue(Double.class);
-                    String imageUrl = itemSnapshot.child("imageUrl").getValue(String.class);
+                    String imagem = itemSnapshot.child("imagem").getValue(String.class);
 
-                    if (nome != null && descricao != null &&  imageUrl != null) {
-                        pratosList.add(new MenuItem(nome, descricao, preco, imageUrl));
+                    if (nome != null && descricao != null &&  imagem != null) {
+                        pratosList.add(new MenuItem(nome, descricao, preco, imagem));
                     }
                 }
 
