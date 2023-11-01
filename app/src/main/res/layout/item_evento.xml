@@ -1,30 +1,27 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/textViewName"
+        android:id="@+id/titulo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Nome do evento" />
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/textViewDescription"
+        android:id="@+id/data"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Descrição do evento" />
+        android:layout_below="@+id/titulo"
+        android:textSize="16sp" />
 
     <TextView
-        android:id="@+id/textViewDate"
+        android:id="@+id/descricao"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Data do evento" />
+        android:layout_below="@+id/data"
+        android:textSize="16sp" />
 
-    <TextView
-        android:id="@+id/textViewTime"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Horário do evento" />
-
-</LinearLayout>
+</RelativeLayout>
