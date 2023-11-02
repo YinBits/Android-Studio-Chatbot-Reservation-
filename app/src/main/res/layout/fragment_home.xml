@@ -91,31 +91,18 @@
         android:background="@drawable/container_search"
         />
 
-    <ImageView
-        android:id="@+id/search_badge"
-        android:layout_width="40dp"
-        android:layout_height="50dp"
-        android:src="@drawable/ic_search"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/container_user"
-        android:layout_marginLeft="10dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="70dp"
-        />
+    <SearchView
 
-    <EditText
-        android:id="@+id/textSearch_bar"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/container_user"
-        android:layout_marginLeft="50dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="65dp"
-        android:text="Procure seu prato..."
-        android:textColor="#c1c1c1"
+        android:id="@+id/searchView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:iconifiedByDefault="false"
+        android:queryHint="Pesquisar..."
+        android:layout_gravity="end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp" />
 
-        />
 
     <View
         android:id="@+id/container_filter"

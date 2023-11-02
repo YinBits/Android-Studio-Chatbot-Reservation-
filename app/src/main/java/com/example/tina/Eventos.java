@@ -41,16 +41,16 @@ public class Eventos extends Fragment {
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
         // Criar a lista de eventos
-        todosEventos = new ArrayList<>(); // Mantenha uma cópia de todos os eventos
-        eventosFiltrados = new ArrayList<>(); // Inicialize a lista de eventos filtrados
+        todosEventos = new ArrayList<>();
+        eventosFiltrados = new ArrayList<>();
 
         // Configurar o adaptador
         mAdapter = new EventosAdapter(getContext(), eventosFiltrados);
 
         // Vincular o adaptador ao ListView
         mListView = view.findViewById(R.id.listView);
-        mEmptyView = view.findViewById(R.id.empty_view); // Obtém a referência ao TextView de visualização vazia
-        mListView.setEmptyView(mEmptyView); // Define o TextView de visualização vazia para o ListView
+        mEmptyView = view.findViewById(R.id.empty_view);
+        mListView.setEmptyView(mEmptyView);
         mListView.setAdapter(mAdapter);
 
         // Configurar o CalendarView
@@ -59,14 +59,10 @@ public class Eventos extends Fragment {
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                // Aqui, você obtém a data selecionada pelo usuário no formato padrão "yyyy-MM-dd"
                 String dataSelecionada = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
 
-                // Verifica se já existem eventos filtrados para a data selecionada
-                if (eventosFiltrados.isEmpty() || !eventosFiltrados.get(0).getData().equals(dataSelecionada)) {
-                    // Filtrar os eventos com base na data selecionada
-                    filtrarEventosPorData(dataSelecionada);
-                }
+                // Filtrar os eventos com base na data selecionada
+                filtrarEventosPorData(dataSelecionada);
             }
         });
 
@@ -75,25 +71,28 @@ public class Eventos extends Fragment {
         eventosRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                todosEventos.clear(); // Limpar a lista de todos os eventos
+                todosEventos.clear();
 
                 for (DataSnapshot eventSnapshot : dataSnapshot.getChildren()) {
-                    // Obter os dados do evento
                     String nome = eventSnapshot.child("nome").getValue(String.class);
                     String data = eventSnapshot.child("data").getValue(String.class);
                     String descricao = eventSnapshot.child("descricao").getValue(String.class);
 
-                    // Verificar se os valores não são nulos antes de criar uma instância de Evento
                     if (nome != null && data != null && descricao != null) {
                         EventoItem evento = new EventoItem(nome, data, descricao);
                         todosEventos.add(evento);
                     }
                 }
+
+                // Após carregar os eventos, verifique se há uma data selecionada e aplique a filtragem
+                if (!eventosFiltrados.isEmpty()) {
+                    String dataSelecionada = eventosFiltrados.get(0).getData();
+                    filtrarEventosPorData(dataSelecionada);
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Tratar erros ao carregar os eventos
                 Log.e("Firebase", "Erro ao carregar os eventos: " + databaseError.getMessage());
             }
         });
@@ -101,6 +100,7 @@ public class Eventos extends Fragment {
         return view;
     }
 
+    // Método para filtrar eventos por data
     // Método para filtrar eventos por data
     private void filtrarEventosPorData(String dataSelecionada) {
         eventosFiltrados.clear(); // Limpe os eventos filtrados existentes
@@ -111,14 +111,14 @@ public class Eventos extends Fragment {
             }
         }
 
-        if (eventosFiltrados.isEmpty()) { // Verifica se a lista de eventos filtrados está vazia
-            mEmptyView.setText("Sem eventos nesta data"); // Define o texto para o TextView de visualização vazia
-        } else {
-            mEmptyView.setText(""); // Limpa o texto do TextView de visualização vazia
-        }
 
-        mAdapter.clear();
-        mAdapter.addAll(eventosFiltrados);
         mAdapter.notifyDataSetChanged();
+
+        if (eventosFiltrados.isEmpty()) {
+            mEmptyView.setText("Sem eventos nesta data");
+        } else {
+            mEmptyView.setText("");
+        }
     }
+
 }
