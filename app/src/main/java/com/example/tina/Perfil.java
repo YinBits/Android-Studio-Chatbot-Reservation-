@@ -51,7 +51,7 @@ public class Perfil extends Fragment {
         View view = inflater.inflate(R.layout.fragment_perfil, container, false);
 
         mAuth = FirebaseAuth.getInstance();
-        storageReference = FirebaseStorage.getInstance().getReference();
+        storageReference = FirebaseStorage.getInstance().getReference().child("ProfileImage");
         String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         String user = userEmail.substring(0, userEmail.indexOf('@')).replace(".", "-");
         databaseReference = FirebaseDatabase.getInstance().getReference("Usuário").child(user);

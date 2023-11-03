@@ -53,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
             loadFragment(new Home());
+
+
+
     }
 
 

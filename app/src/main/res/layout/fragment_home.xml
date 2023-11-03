@@ -11,12 +11,16 @@
     tools:layout_editor_absoluteY="0dp">
 
 
-
+    <View
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:background="@drawable/gradient"
+        tools:ignore="MissingConstraints" />
     <View
         android:id="@+id/container_user"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="15dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
         android:layout_marginLeft="10dp"
         android:background="@drawable/container_user"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,8 +30,8 @@
     <de.hdodenhof.circleimageview.CircleImageView
 
         android:id="@+id/imgProfile"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:src="@drawable/ic_user"
         app:layout_constraintBottom_toBottomOf="@id/container_user"
         app:layout_constraintEnd_toEndOf="@id/container_user"
@@ -39,94 +43,47 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Bem vindo,"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         app:layout_constraintStart_toEndOf="@id/container_user"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="22dp"
         android:layout_marginLeft="8dp"
+        android:textSize="20dp"
         />
     <TextView
         android:id="@+id/textNome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Usuario!"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         app:layout_constraintStart_toEndOf="@id/container_user"
         app:layout_constraintTop_toBottomOf="@id/text"
-
         android:layout_marginLeft="8dp"
+        android:textSize="20dp"
         />
 
-    <View
-        android:id="@+id/container_notification"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="15dp"
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="0dp"
         android:layout_marginRight="10dp"
-        android:background="@drawable/container_notificatiion"
+        android:src="@drawable/logo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:backgroundTint="#D9D9D9"
-        />
-    <ImageView
-
-        android:id="@+id/notification"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/ic_notification"
-        app:layout_constraintBottom_toBottomOf="@id/container_notification"
-        app:layout_constraintEnd_toEndOf="@id/container_notification"
-        app:layout_constraintStart_toStartOf="@id/container_notification"
-        app:layout_constraintTop_toTopOf="@id/container_notification" />
-
-    <View
-        android:id="@+id/search_bar"
-        android:layout_width="292dp"
-        android:layout_height="50dp"
-        app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintTop_toTopOf="@id/container_user"
-        android:layout_marginLeft="10dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="70dp"
-        android:background="@drawable/container_search"
         />
 
-    <SearchView
 
-        android:id="@+id/searchView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:iconifiedByDefault="false"
-        android:queryHint="Pesquisar..."
-        android:layout_gravity="end"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp" />
-
-
-    <View
-        android:id="@+id/container_filter"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/search_bar"
-        android:layout_marginRight="10dp"
-        android:layout_alignParentBottom="true"
-        android:backgroundTint="#D9D9D9"
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="200sp"
+        app:layout_constraintTop_toBottomOf="@id/container_user"
+        android:layout_marginTop="35dp"
+        android:id="@+id/recycler"
+        app:layoutManager="com.google.android.material.carousel.CarouselLayoutManager"
+        android:orientation="horizontal"
+        android:background="@drawable/rounded_bg"
         />
-
-    <ImageView
-    android:layout_width="50dp"
-    android:layout_height="50dp"
-    android:src="@drawable/ic_filter"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toTopOf="@id/search_bar"
-    android:layout_marginRight="10dp"
-    android:layout_alignParentBottom="true"
-    android:backgroundTint="#D9D9D9"
-    />
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

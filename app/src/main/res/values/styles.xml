@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Estilo personalizado para o CalendarView -->
+    <style name="CustomCalendarViewStyle">
+        <item name="android:background">@drawable/gradient</item>
+        <item name="android:colorAccent">@color/white</item>
+        <item name="android:textColorPrimary">@color/white</item>
+    </style>
+</resources>

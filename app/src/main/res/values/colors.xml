@@ -6,4 +6,11 @@
     <color name="Yellow">#FF9B05</color>
     <color name="Cinza">#F1F1F1</color>
     <color name="VinhoClaro">#8C2424</color>
+    <color name="VinhoGradient">#5F000D</color>
+    <color name="VinhoGradient2">#440000</color>
+    <color name="Marrom">#964b00</color>
+
+
+
+
 </resources>

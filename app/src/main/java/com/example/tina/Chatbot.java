@@ -62,6 +62,8 @@ public class Chatbot extends Fragment {
     private boolean isChoosingAnotherTable = false;
     private String chosenTableNumber = "";
 
+    private String userName = "";
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -73,6 +75,26 @@ public class Chatbot extends Fragment {
 
         sendButton.setOnClickListener(v -> sendMessage());
 
+
+        String userEmail = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail();
+        String user = userEmail.substring(0, userEmail.indexOf('@')).replace(".", "-");
+        DatabaseReference userReference = FirebaseDatabase.getInstance().getReference("Usuário").child(user);
+
+        userReference.child("nome").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    userName = dataSnapshot.getValue(String.class);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("Chatbot", "Erro ao acessar o banco de dados para obter o nome do usuário: " + databaseError.getMessage());
+            }
+        });
+
+
         questions = new ArrayList<>();
         questions.add("Qual data você deseja fazer a reserva? (DD/MM/AAAA)");
         questions.add("Qual horário você deseja reservar?");
@@ -80,13 +102,15 @@ public class Chatbot extends Fragment {
         questions.add("Qual é o número da mesa desejada?");
 
         // Mensagem de apresentação quando o fragmento é inflado
-        addBotMessage("Tina", "Olá, eu sou o Chatbot Tina e estou aqui para ajudar você a fazer reservas de mesa. Para começar, digite 'reserva' se deseja fazer uma reserva.");
+        addBotMessage("Chatbot", "Olá, eu sou o Chatbot Tina e estou aqui para ajudar você a fazer reservas de mesa. Para começar, digite 'reserva' se deseja fazer uma reserva.");
 
         // Inicializar mapas de conversão para mesas e pessoas e para horários
         initializeTableAndPeopleWordToNumberMap();
         initializeTimeWordToNumberMap();
 
+
         return view;
+
     }
 
     // Função para inicializar o mapa de conversão para mesas e pessoas
@@ -115,6 +139,9 @@ public class Chatbot extends Fragment {
         timeWordToNumberMap.put("meio-dia", 12);
         timeWordToNumberMap.put("meia-noite", 24);
         // Adicione mais mapeamentos conforme necessário para horários
+
+
+
     }
 
     private void sendMessage() {
@@ -165,7 +192,7 @@ public class Chatbot extends Fragment {
 
         // Por exemplo, você pode adicionar chosenTableNumber à sua instância de Reserva:
         Reserva reserva = new Reserva();
-
+        reserva.setNomeCliente(userName);
         reserva.setNumeroMesa(tableNumber);
         reserva.setDataReserva(reservationDate);
         reserva.setHorarioReserva(reservationTime);
@@ -374,7 +401,7 @@ public class Chatbot extends Fragment {
         // Crie uma instância da sua classe Reserva e preencha os dados
         Reserva reserva = new Reserva();
         // Adicione o nome do usuário à reserva
-
+        reserva.setNomeCliente(userName);
         reserva.setDataReserva(reservationDate);
         reserva.setHorarioReserva(reservationTime);
         reserva.setNumeroMesa(tableNumber);

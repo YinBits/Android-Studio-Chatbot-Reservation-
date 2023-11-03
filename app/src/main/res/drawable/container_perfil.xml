@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <solid android:color="@color/Vinho"/>
+    <gradient
+        android:startColor="@color/VinhoGradient"
+        android:endColor="@color/VinhoGradient2"
+        android:angle="90"
+        android:type="linear"
+        android:centerX="50"
+        android:centerY="50" />
     <corners android:bottomLeftRadius="20dp"
         android:bottomRightRadius="20dp"
         />
