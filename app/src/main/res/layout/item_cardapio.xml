@@ -3,15 +3,32 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@drawable/rounded_bg"
+    android:backgroundTint="@color/white"
+    android:outlineSpotShadowColor="@color/black"
+    android:handwritingBoundsOffsetRight="@dimen/cardview_compat_inset_shadow"
+    android:outlineAmbientShadowColor="@color/black"
+    >
 
+<LinearLayout
+    android:id="@+id/card"
+    android:layout_width="150dp"
+    android:layout_height="match_parent"
+    android:background="@drawable/card"
+    android:orientation="vertical"
+    android:padding="15dp"
+
+    >
     <ImageView
         android:id="@+id/itemImageView"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:scaleType="centerCrop"
         android:src="@drawable/container_perfil"
-    android:contentDescription="@null" />
+        android:contentDescription="@null"
+        android:layout_gravity="center"
+        />
 
     <TextView
         android:id="@+id/itemNameTextView"
@@ -19,7 +36,8 @@
         android:layout_height="wrap_content"
         android:text="Nome do Item"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:paddingTop="5dp"/>
 
     <TextView
         android:id="@+id/itemDescriptionTextView"
@@ -35,5 +53,5 @@
         android:text="Preço: R$ 0.00"
         android:textSize="16sp"
         android:textStyle="bold" />
-
+</LinearLayout>
 </LinearLayout>

@@ -20,7 +20,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Locale;
 
 public class Eventos extends Fragment {
@@ -56,15 +58,10 @@ public class Eventos extends Fragment {
         // Configurar o CalendarView
         CalendarView calendarView = view.findViewById(R.id.calendarView);
 
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                String dataSelecionada = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
-
-                // Filtrar os eventos com base na data selecionada
-                filtrarEventosPorData(dataSelecionada);
-            }
-        });
+        // Obter a data atual em formato yyyy-MM-dd
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        String dataAtual = dateFormat.format(calendar.getTime());
 
         // Carregar todos os eventos do Firebase inicialmente
         DatabaseReference eventosRef = mDatabase.child("Eventos");
@@ -84,11 +81,8 @@ public class Eventos extends Fragment {
                     }
                 }
 
-                // Após carregar os eventos, verifique se há uma data selecionada e aplique a filtragem
-                if (!eventosFiltrados.isEmpty()) {
-                    String dataSelecionada = eventosFiltrados.get(0).getData();
-                    filtrarEventosPorData(dataSelecionada);
-                }
+                // Filtrar os eventos com base na data atual
+                filtrarEventosPorData(dataAtual);
             }
 
             @Override
@@ -97,20 +91,28 @@ public class Eventos extends Fragment {
             }
         });
 
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
+                String dataSelecionada = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
+
+                // Filtrar os eventos com base na data selecionada
+                filtrarEventosPorData(dataSelecionada);
+            }
+        });
+
         return view;
     }
 
     // Método para filtrar eventos por data
-    // Método para filtrar eventos por data
     private void filtrarEventosPorData(String dataSelecionada) {
-        eventosFiltrados.clear(); // Limpe os eventos filtrados existentes
+        eventosFiltrados.clear();
 
         for (EventoItem evento : todosEventos) {
             if (evento.getData().equals(dataSelecionada)) {
                 eventosFiltrados.add(evento);
             }
         }
-
 
         mAdapter.notifyDataSetChanged();
 
@@ -120,5 +122,4 @@ public class Eventos extends Fragment {
             mEmptyView.setText("");
         }
     }
-
 }

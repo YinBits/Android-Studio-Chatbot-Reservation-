@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.SearchView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,7 +27,9 @@ public class Doces extends Fragment {
 
     private RecyclerView recyclerView;
     private CardapioAdapter cardapioAdapter;
-    private List<MenuItem> pratosList;
+    private List<MenuItem> docesList;
+    private SearchView searchView;
+    private TextView noResultsTextView;
 
     @Nullable
     @Override
@@ -33,26 +37,43 @@ public class Doces extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_pratos, container, false);
 
         recyclerView = rootView.findViewById(R.id.gridlayout);
-
-        pratosList = new ArrayList<>();
-
-        // Inicialize o adaptador com a lista vazia
-        cardapioAdapter = new CardapioAdapter(pratosList);
+        docesList = new ArrayList<>();
+        cardapioAdapter = new CardapioAdapter(docesList);
         recyclerView.setAdapter(cardapioAdapter);
 
-        // Configurando um GridLayoutManager com 2 colunas
-        int numberOfColumns = 2;
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numberOfColumns));
+        int numberColumns = 2;
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numberColumns));
 
+        // Botão "Voltar"
         Button buttonVoltarCardapio = rootView.findViewById(R.id.btn_voltar);
         buttonVoltarCardapio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openCardapio();
+                requireActivity().onBackPressed();
             }
         });
 
-        // Carregue os itens do Firebase Realtime Database
+        // Inicialização da barra de pesquisa
+        searchView = rootView.findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                filterResults(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterResults(newText);
+                return true;
+            }
+        });
+
+        // Inicialização do TextView para exibir a mensagem
+        noResultsTextView = rootView.findViewById(R.id.noResultsTextView);
+        noResultsTextView.setVisibility(View.GONE); // Inicialmente, oculte o TextView
+
+        // Carregar os itens do Firebase Realtime Database
         loadItemsFromFirebase();
 
         return rootView;
@@ -63,7 +84,7 @@ public class Doces extends Fragment {
         cardapioRef.orderByChild("categoria").equalTo("Doces").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                pratosList.clear(); // Limpe a lista existente
+                docesList.clear();
 
                 for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
                     String nome = itemSnapshot.child("nome").getValue(String.class);
@@ -71,12 +92,18 @@ public class Doces extends Fragment {
                     double preco = itemSnapshot.child("preco").getValue(Double.class);
                     String imagem = itemSnapshot.child("imagem").getValue(String.class);
 
-                    if (nome != null && descricao != null &&  imagem != null) {
-                        pratosList.add(new MenuItem(nome, descricao, preco, imagem));
+                    if (nome != null && descricao != null && imagem != null) {
+                        docesList.add(new MenuItem(nome, descricao, preco, imagem));
                     }
                 }
 
-                // Notificar o adapter de que os dados foram atualizados
+                // Verifique se há resultados após o carregamento dos itens
+                if (docesList.isEmpty()) {
+                    noResultsTextView.setVisibility(View.VISIBLE); // Exiba a mensagem
+                } else {
+                    noResultsTextView.setVisibility(View.GONE); // Oculte a mensagem
+                }
+
                 cardapioAdapter.notifyDataSetChanged();
             }
 
@@ -88,11 +115,26 @@ public class Doces extends Fragment {
         });
     }
 
-    private void openCardapio() {
-        Cardapio cardapio = new Cardapio();
-        requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, cardapio)
-                .addToBackStack(null)
-                .commit();
+    private void filterResults(String query) {
+        List<MenuItem> filteredList = new ArrayList<>();
+        String lowercaseQuery = query.toLowerCase();
+
+        for (MenuItem item : docesList) {
+            String nome = item.getNome().toLowerCase();
+            String descricao = item.getDescricao().toLowerCase();
+
+            if (nome.contains(lowercaseQuery) || descricao.contains(lowercaseQuery)) {
+                filteredList.add(item);
+            }
+        }
+
+        // Atualize a visibilidade do TextView de acordo com os resultados
+        if (filteredList.isEmpty()) {
+            noResultsTextView.setVisibility(View.VISIBLE); // Exiba a mensagem
+        } else {
+            noResultsTextView.setVisibility(View.GONE); // Oculte a mensagem
+        }
+
+        cardapioAdapter.setItems(filteredList);
     }
 }

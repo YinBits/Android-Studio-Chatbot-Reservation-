@@ -27,6 +27,11 @@ public class CardapioAdapter extends RecyclerView.Adapter<CardapioAdapter.ViewHo
         notifyDataSetChanged();
     }
 
+    public void setItems(List<MenuItem> filteredList) {
+        menuItems = filteredList;
+        notifyDataSetChanged();
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView itemNameTextView;
         public TextView itemDescriptionTextView;
