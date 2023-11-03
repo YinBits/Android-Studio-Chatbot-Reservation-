@@ -1,6 +1,7 @@
 package com.example.tina;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -98,6 +100,7 @@ public class Home extends Fragment {
     private void fetchUserData() {
         if (databaseReference != null) {
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
@@ -106,7 +109,7 @@ public class Home extends Fragment {
                             Glide.with(requireContext()).load(imageURL).into(imgProfile);
                         }
 
-                        String nome = dataSnapshot.child("nome").getValue(String.class);
+                        String nome = Codex.decode(dataSnapshot.child("nome").getValue(String.class));
                         txtNome.setText(nome);
                     }
                 }

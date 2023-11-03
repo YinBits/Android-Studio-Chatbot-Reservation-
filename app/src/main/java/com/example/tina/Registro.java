@@ -1,6 +1,7 @@
 package com.example.tina;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -12,6 +13,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -91,6 +93,7 @@ public class Registro extends AppCompatActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -159,14 +162,21 @@ public class Registro extends AppCompatActivity {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void uploadData(String nome, String telefone, String dataNascimento, String cpf, String email) {
-
-        DataClass dataClass = new DataClass(nome, telefone, dataNascimento, cpf, email, null);
 
         int indiceArroba = email.indexOf('@');
 
         if (indiceArroba != -1) {
             String novoEmail = email.substring(0, indiceArroba).replace(".", "-");
+
+            nome = Codex.encode(nome);
+            telefone = Codex.encode(telefone);
+            dataNascimento = Codex.encode(dataNascimento);
+            cpf = Codex.encode(cpf);
+            email = Codex.encode(email);
+
+            DataClass dataClass = new DataClass(nome, telefone, dataNascimento, cpf, email, null);
 
             FirebaseDatabase.getInstance().getReference("Usuário").child(novoEmail).setValue(dataClass).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {

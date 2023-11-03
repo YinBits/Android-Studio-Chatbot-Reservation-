@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -46,6 +48,7 @@ public class Perfil extends Fragment {
         this.context = context;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_perfil, container, false);
@@ -66,10 +69,16 @@ public class Perfil extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists() && context != null) {
-                    String nome = dataSnapshot.child("nome").getValue(String.class);
-                    String email = dataSnapshot.child("email").getValue(String.class);
-                    String dataNascimento = dataSnapshot.child("dataNascimento").getValue(String.class);
-                    String telefone = dataSnapshot.child("telefone").getValue(String.class);
+                    String nome = Codex.decode(dataSnapshot.child("nome").getValue(String.class));
+                    String email = Codex.decode(dataSnapshot.child("email").getValue(String.class));
+                    String dataNascimento = Codex.decode(dataSnapshot.child("dataNascimento").getValue(String.class));
+                    String telefone = Codex.decode(dataSnapshot.child("telefone").getValue(String.class));
+
+                    Log.i("Decode", "Decoded values:"
+                            + "\nNome: " + nome
+                            + "\nEmail: " + email
+                            + "\nData de nascimento: " + dataNascimento
+                            + "\nTelefone: " + telefone);
 
                     txtNome.setText(nome != null ? nome : "");
                     txtEmail.setText(email != null ? email : "");
