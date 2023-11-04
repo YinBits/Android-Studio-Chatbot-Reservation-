@@ -25,20 +25,28 @@
         android:layout_marginBottom="50dp"
         android:padding="16dp">
 
+
+
+
         <EditText
             android:id="@+id/userInputEditText"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_width="320dp"
+            android:layout_height="50dp"
             android:hint="Digite sua mensagem"
-            android:inputType="text" />
+            android:inputType="text"
+            android:background="@drawable/container_search"
+            android:padding="15dp"
+            />
 
         <Button
             android:id="@+id/sendButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Enviar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true" />
+            android:layout_alignParentRight="true"
+            android:background="@mipmap/ic_launcher"
+            android:layout_marginBottom="2dp"
+            />
 
         <!-- Campos do formulário -->
         <EditText

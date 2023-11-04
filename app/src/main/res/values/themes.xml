@@ -3,6 +3,12 @@
     <style name="Base.Theme.Tina" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:windowBackground">@drawable/gradient</item>
+
     </style>
-    <style name="Theme.Tina" parent="Base.Theme.Tina" />
+    <style name="Theme.Tina" parent="Base.Theme.Tina"
+        >
+        <item name="android:windowBackground">@drawable/gradient</item>
+    </style>
+
 </resources>

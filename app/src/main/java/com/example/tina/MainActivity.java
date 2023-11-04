@@ -1,8 +1,9 @@
 package com.example.tina;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Window;
+import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -10,14 +11,9 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
-    DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("Usuário");
-    String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
     private BottomNavigationView bottomNavigationView;
-
 
     private void loadFragment(Fragment fragment) {
         getSupportFragmentManager()
@@ -26,10 +22,14 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
-    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Ocultar a barra de notificação
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_main);
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -52,20 +52,16 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
-            loadFragment(new Home());
 
-
-
+        loadFragment(new Home());
     }
-
-
-
 
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser currentuser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentuser == null) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            // Se o usuário não estiver autenticado, redirecione para a tela de login
             Intent intent = new Intent(MainActivity.this, Login.class);
             startActivity(intent);
             finish();

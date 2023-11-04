@@ -28,6 +28,7 @@
         android:src="@drawable/container_perfil"
         android:contentDescription="@null"
         android:layout_gravity="center"
+        android:background="@drawable/rounded_bg"
         />
 
     <TextView

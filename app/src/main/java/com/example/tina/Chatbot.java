@@ -2,11 +2,13 @@ package com.example.tina;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -205,16 +207,22 @@ public class Chatbot extends Fragment {
 
     private void askNextQuestion() {
         if (currentQuestionIndex < questions.size()) {
-            addMessage("Você", userInputEditText.getText().toString().trim()); // Adiciona a resposta do usuário à direita
-            addBotMessage("Tina", questions.get(currentQuestionIndex));
+            addMessage("Você", userInputEditText.getText().toString().trim()); // Adicione a resposta do usuário à direita
+
+            if (currentQuestionIndex == 3) {
+                // Se for a pergunta sobre a mesa, adicione a imagem da mesa
+                addBotMessageWithImage("Tina", questions.get(currentQuestionIndex), R.drawable.mapamesas);
+            } else {
+                // Caso contrário, adicione apenas o texto da pergunta
+                addBotMessage("Tina", questions.get(currentQuestionIndex));
+            }
         } else {
             // Todas as perguntas foram respondidas
             if (isMakingReservation) {
-                // Realizar a checagem e enviar para o banco de dados
+                // Realize a checagem e envie para o banco de dados
                 checkTableAvailabilityAndProceed(reservationDate, tableNumber);
             } else {
-                // Reiniciar o chatbot ou concluir o processo aqui conforme necessário
-
+                // Reinicie o chatbot ou conclua o processo aqui conforme necessário
 
                 // Aqui você pode criar uma função para processar a reserva e enviar os dados para o banco
                 registerReservationInDatabase();
@@ -475,5 +483,46 @@ public class Chatbot extends Fragment {
             }
         });
     }
+
+    private void addBotMessageWithImage(String sender, String message, int imageResourceId) {
+        // Crie uma View para conter a imagem e o texto
+        LinearLayout messageLayout = new LinearLayout(getContext());
+        messageLayout.setOrientation(LinearLayout.VERTICAL);
+
+        // Adicione a imagem
+        ImageView imageView = new ImageView(getContext());
+        imageView.setImageResource(imageResourceId);
+        imageView.setPadding(0, 0, 0, 0); // Define o padding na imagem
+        messageLayout.addView(imageView);
+
+        // Adicione o texto da mensagem
+        TextView textView = new TextView(getContext());
+        textView.setText(message);
+        textView.setPadding(0, 8, 0, 0); // Define o padding no textView (espaço entre a imagem e o texto)
+        messageLayout.addView(textView);
+
+        // Defina margens e layout para a mensagem
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        int defaultMargin = getResources().getDimensionPixelSize(R.dimen.message_margin);
+        layoutParams.setMargins(defaultMargin, defaultMargin, defaultMargin, defaultMargin);
+        layoutParams.gravity = sender.equals("Você") ? Gravity.END : Gravity.START;
+        messageLayout.setLayoutParams(layoutParams);
+
+        // Defina o background com base no remetente
+        if (sender.equals("Você")) {
+            layoutParams.setMargins(100, defaultMargin, defaultMargin, defaultMargin);
+            messageLayout.setBackgroundResource(R.drawable.user_message_background);
+        } else {
+            layoutParams.setMargins(defaultMargin, defaultMargin, 100, defaultMargin);
+            messageLayout.setBackgroundResource(R.drawable.chatbot_message_background);
+        }
+
+        // Adicione a mensagem ao container
+        messageContainer.addView(messageLayout);
+
+        // Role para a parte inferior da ScrollView
+        messageScrollView.post(() -> messageScrollView.fullScroll(View.FOCUS_DOWN));
+    }
+
 
 }

@@ -3,7 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
     <CalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
@@ -14,26 +17,40 @@
 
 
     <TextView
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Eventos"
         android:textSize="30dp"
-        android:layout_gravity="center"
+        android:layout_centerHorizontal="true"
         android:textColor="@color/Vinho"
-        android:layout_marginBottom="20dp" />
+        android:layout_marginBottom="20dp"
+        android:layout_below="@id/calendarView"
+        />
 
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/title"
+    >
 
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:isScrollContainer="true"
         android:numColumns="1"
-        android:isScrollContainer="false"
-        android:scrollbars="none" />
+        android:layout_marginBottom="60dp"
+        android:padding="10dp"
+        android:scrollbars="none"
+        />
 
     <TextView
         android:id="@+id/empty_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+</RelativeLayout>
 
+</RelativeLayout>
 </LinearLayout>
+

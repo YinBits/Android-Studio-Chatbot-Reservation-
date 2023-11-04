@@ -2,7 +2,7 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <corners android:radius="20dp" />
 
-    <solid android:color="@color/Vinho" /> <!-- Cor de fundo do usuário, você pode alterar essa cor -->
+    <solid android:color="@color/VinhoGradient" /> <!-- Cor de fundo do usuário, você pode alterar essa cor -->
     <padding
         android:left="16dp"
         android:top="16dp"
