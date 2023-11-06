@@ -44,7 +44,7 @@
             android:layout_height="50dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:background="@mipmap/ic_launcher"
+            android:background="@drawable/send_icon"
             android:layout_marginBottom="2dp"
             />
 

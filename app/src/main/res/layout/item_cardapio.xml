@@ -3,13 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:padding="10dp"
     android:background="@drawable/rounded_bg"
     android:backgroundTint="@color/white"
     android:outlineSpotShadowColor="@color/black"
     android:handwritingBoundsOffsetRight="@dimen/cardview_compat_inset_shadow"
     android:outlineAmbientShadowColor="@color/black"
-    >
+    android:layout_margin="10dp">
 
 <LinearLayout
     android:id="@+id/card"
