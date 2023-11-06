@@ -143,7 +143,6 @@ public class Chatbot extends Fragment {
         // Adicione mais mapeamentos conforme necessário para horários
 
 
-
     }
 
     private void sendMessage() {
@@ -211,7 +210,12 @@ public class Chatbot extends Fragment {
 
             if (currentQuestionIndex == 3) {
                 // Se for a pergunta sobre a mesa, adicione a imagem da mesa
+// Enviar a mensagem com imagem
                 addBotMessageWithImage("Tina", questions.get(currentQuestionIndex), R.drawable.mapamesas);
+
+// Enviar a mensagem de texto abaixo da imagem
+                addBotMessage("Tina", "Digite o número da mesa desejada");
+
             } else {
                 // Caso contrário, adicione apenas o texto da pergunta
                 addBotMessage("Tina", questions.get(currentQuestionIndex));
@@ -402,9 +406,6 @@ public class Chatbot extends Fragment {
     }
 
 
-
-
-
     private void registerReservationInDatabase() {
         // Crie uma instância da sua classe Reserva e preencha os dados
         Reserva reserva = new Reserva();
@@ -492,13 +493,14 @@ public class Chatbot extends Fragment {
         // Adicione a imagem
         ImageView imageView = new ImageView(getContext());
         imageView.setImageResource(imageResourceId);
-        imageView.setPadding(0, 0, 0, 0); // Define o padding na imagem
+        // Defina o tamanho da imagem como 200x200 pixels
+        LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(1000, 1000);
+        imageView.setLayoutParams(imageParams);
         messageLayout.addView(imageView);
 
         // Adicione o texto da mensagem
         TextView textView = new TextView(getContext());
         textView.setText(message);
-        textView.setPadding(0, 8, 0, 0); // Define o padding no textView (espaço entre a imagem e o texto)
         messageLayout.addView(textView);
 
         // Defina margens e layout para a mensagem
@@ -524,5 +526,6 @@ public class Chatbot extends Fragment {
         messageScrollView.post(() -> messageScrollView.fullScroll(View.FOCUS_DOWN));
     }
 
-
 }
+
+
