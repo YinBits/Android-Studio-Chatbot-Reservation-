@@ -85,5 +85,73 @@
         android:background="@drawable/rounded_bg"
         />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="200sp"
+        app:layout_constraintTop_toBottomOf="@id/container_user"
+        android:layout_marginTop="35dp"
+        android:id="@+id/recycler"
+        app:layoutManager="com.google.android.material.carousel.CarouselLayoutManager"
+        android:orientation="horizontal"
+        android:background="@drawable/rounded_bg" />
+
+    <!-- Adicione a caixa para a reserva do usuário e o botão cancelar -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/reservationCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/recycler"
+        android:layout_marginTop="16dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/Vinho">
+
+        <!-- Conteúdo da caixa da reserva -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+
+            >
+
+            <!-- Label para a reserva do usuário -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sua Reserva:"
+                android:textColor="@color/VinhoGradient2"
+                android:textSize="18sp"
+                android:textAlignment="center"
+                android:paddingBottom="5dp"
+                />
+
+            <!-- Texto dinâmico para exibir a reserva do usuário (substitua pelo valor real do banco de dados) -->
+            <TextView
+                android:id="@+id/reservationText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reserva do usuário"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:paddingBottom="5dp"/>
+
+            <!-- Botão para cancelar a reserva -->
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancelar Reserva"
+                android:textColor="@android:color/white"
+                android:backgroundTint="@color/Vinho"
+                android:layout_gravity="center"
+                android:onClick="cancelReservation"
+                android:id="@+id/cancelReservation"
+                />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,8 +7,9 @@
     </style>
 
     <style name="AppTheme.FullScreen" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:notificationTimeout">@integer/material_motion_duration_short_1</item>
+        <item name="android:windowBackground">@color/Vinho</item>
 
-        <item name="android:windowBackground">@drawable/gradient</item>
     </style>
 
 </resources>

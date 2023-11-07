@@ -93,6 +93,60 @@ public class Registro extends AppCompatActivity {
         }
     }
 
+    private boolean isValidCPF(String cpf) {
+        // Remove caracteres não numéricos do CPF
+        cpf = cpf.replaceAll("[^0-9]", "");
+
+        // Verifica se o CPF tem 11 dígitos
+        if (cpf.length() != 11) {
+            return false;
+        }
+
+        // Verifica se todos os dígitos são iguais (CPF inválido)
+        boolean allDigitsEqual = true;
+        for (int i = 1; i < cpf.length(); i++) {
+            if (cpf.charAt(i) != cpf.charAt(0)) {
+                allDigitsEqual = false;
+                break;
+            }
+        }
+        if (allDigitsEqual) {
+            return false;
+        }
+
+        // Calcula o primeiro dígito verificador
+        int sum = 0;
+        for (int i = 0; i < 9; i++) {
+            sum += (cpf.charAt(i) - '0') * (10 - i);
+        }
+        int remainder = 11 - (sum % 11);
+
+        if (remainder == 10 || remainder == 11) {
+            remainder = 0;
+        }
+
+        if (remainder != (cpf.charAt(9) - '0')) {
+            return false;
+        }
+
+        // Calcula o segundo dígito verificador
+        sum = 0;
+        for (int i = 0; i < 10; i++) {
+            sum += (cpf.charAt(i) - '0') * (11 - i);
+        }
+        remainder = 11 - (sum % 11);
+
+        if (remainder == 10 || remainder == 11) {
+            remainder = 0;
+        }
+
+        if (remainder != (cpf.charAt(10) - '0')) {
+            return false;
+        }
+
+        return true;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,8 +172,6 @@ public class Registro extends AppCompatActivity {
         EditText edt_CPF = findViewById(R.id.edt_CPF);
         edt_CPF.addTextChangedListener(MaskUtils.insertMask(edt_CPF, "###.###.###-##"));
 
-
-
         ckb_mostrar_senha_registro.setOnCheckedChangeListener((compoundButton, b) -> {
             if (b) {
                 edt_senha_registro.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
@@ -143,15 +195,20 @@ public class Registro extends AppCompatActivity {
 
             if (!TextUtils.isEmpty(RegisterEmail) || !TextUtils.isEmpty(ConfirmarSenha) || !TextUtils.isEmpty(Senha)) {
                 if (Senha.equals(ConfirmarSenha)) {
-                    mAuth.createUserWithEmailAndPassword(RegisterEmail, Senha).addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            uploadData(nome, telefone, dataNascimento, cpf, email);
-                            abrirTelaPrincipal();
-                        } else {
-                            String error = Objects.requireNonNull(task.getException()).getMessage();
-                            Toast.makeText(Registro.this, "" + error, Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    if (isValidCPF(cpf)) {
+                        mAuth.createUserWithEmailAndPassword(RegisterEmail, Senha).addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                uploadData(nome, telefone, dataNascimento, cpf, email);
+                                abrirTelaPrincipal();
+                            } else {
+                                String error = Objects.requireNonNull(task.getException()).getMessage();
+                                Toast.makeText(Registro.this, "" + error, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } else {
+                        Toast.makeText(Registro.this, "CPF inválido. Verifique o número do CPF.", Toast
+                                .LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(Registro.this, "A senha deve ser a mesma em ambos os campos!", Toast.LENGTH_SHORT).show();
                 }
@@ -159,12 +216,10 @@ public class Registro extends AppCompatActivity {
         });
 
         btn_voltar.setOnClickListener(view -> abrirTelaPrincipal());
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void uploadData(String nome, String telefone, String dataNascimento, String cpf, String email) {
-
         int indiceArroba = email.indexOf('@');
 
         if (indiceArroba != -1) {
@@ -186,8 +241,6 @@ public class Registro extends AppCompatActivity {
         } else {
             System.out.println("O email não contém um '@'.");
         }
-
-
     }
 
     private void abrirTelaPrincipal() {

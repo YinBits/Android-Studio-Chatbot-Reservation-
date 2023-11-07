@@ -3,17 +3,22 @@ package com.example.tina;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -35,6 +40,8 @@ public class Home extends Fragment {
     private ImageView imgProfile;
     private ImageView imgCarousel; // ImageView para a imagem do carrossel
     private TextView txtNome;
+    private TextView txtReserva; // TextView para exibir informações da reserva
+    private Button btnCancelarReserva; // Botão para cancelar a reserva
 
     private FirebaseStorage firebaseStorage;
     private StorageReference storageReference;
@@ -43,9 +50,11 @@ public class Home extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        recyclerView= view.findViewById(R.id.recycler);
+        recyclerView = view.findViewById(R.id.recycler);
         imgProfile = view.findViewById(R.id.imgProfile);
         txtNome = view.findViewById(R.id.textNome);
+        txtReserva = view.findViewById(R.id.reservationText);
+        btnCancelarReserva = view.findViewById(R.id.cancelReservation); // Botão de cancelar a reserva
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
@@ -53,6 +62,7 @@ public class Home extends Fragment {
             String user = currentUser.getEmail().substring(0, currentUser.getEmail().indexOf('@')).replace(".", "-");
             databaseReference = FirebaseDatabase.getInstance().getReference("Usuário").child(user);
             fetchUserData();
+            checkReservation(); // Verifique se o usuário tem uma reserva
         }
 
         // Inicialize o ArrayList com as URLs do banco de dados "ImagensBanner"
@@ -94,6 +104,48 @@ public class Home extends Fragment {
             }
         });
 
+        // Configurar o botão de cancelar a reserva
+        btnCancelarReserva.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Adicione o código para cancelar a reserva aqui
+                // Certifique-se de que o usuário tenha uma reserva antes de permitir o cancelamento
+
+                if (databaseReference != null) {
+                    databaseReference.child("Reservas").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                // Se o usuário tiver uma reserva, remova-a do banco de dados
+                                dataSnapshot.getRef().removeValue()
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                // Reserva cancelada com sucesso
+                                                txtReserva.setText("Nenhuma reserva em seu nome");
+                                                btnCancelarReserva.setVisibility(View.GONE);
+                                                Toast.makeText(getActivity(), "Reserva cancelada com sucesso", Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(Exception e) {
+                                                // Trate o erro, caso ocorra
+                                                Toast.makeText(getActivity(), "Erro ao cancelar a reserva", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            // Trate os erros de consulta, se necessário
+                        }
+                    });
+                }
+            }
+        });
+
         return view;
     }
 
@@ -110,13 +162,62 @@ public class Home extends Fragment {
                         }
 
                         String nome = Codex.decode(dataSnapshot.child("nome").getValue(String.class));
-                        txtNome.setText(nome);
+                        // Divida a string do nome no primeiro espaço em branco
+                        String[] nomeParts = nome.split(" ", 2);
+                        if (nomeParts.length > 0) {
+                            txtNome.setText(nomeParts[0]);
+                        } else {
+                            txtNome.setText(nome); // Caso não haja espaços na string
+                        }
                     }
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                     // Trate os erros de consulta, se necessário
+                }
+            });
+        }
+    }
+
+    // Verifique se o usuário tem uma reserva
+    // Verifique se o usuário tem uma reserva
+    private void checkReservation() {
+        if (databaseReference != null) {
+            databaseReference.child("Reservas").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        // O usuário tem uma reserva, exiba os detalhes
+                        String data = dataSnapshot.child("dataReserva").getValue(String.class);
+                        String horario = dataSnapshot.child("horarioReserva").getValue(String.class);
+                        String numeroDaMesa = dataSnapshot.child("numeroMesa").getValue(String.class);
+                        String numeroDePessoas = dataSnapshot.child("numeroPessoas").getValue(String.class);
+
+                        // Adicione logs para verificar os valores
+                        Log.d("Reserva", "Data: " + data);
+                        Log.d("Reserva", "Horário: " + horario);
+                        Log.d("Reserva", "Número da Mesa: " + numeroDaMesa);
+                        Log.d("Reserva", "Número de Pessoas: " + numeroDePessoas);
+
+                        String reservaInfo = data + " no " + horario + " na mesa " + numeroDaMesa + " para " + numeroDePessoas + " pessoas";
+
+                        // Adicione um log para verificar a string de reserva
+                        Log.d("Reserva", "Reserva Info: " + reservaInfo);
+
+                        txtReserva.setText(reservaInfo);
+                        btnCancelarReserva.setVisibility(View.VISIBLE);
+                    } else {
+                        // Não há reserva para este usuário
+                        txtReserva.setText("Nenhuma reserva em seu nome");
+                        btnCancelarReserva.setVisibility(View.GONE);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    // Trate os erros de consulta, se necessário
+                    Log.e("Reserva", "Erro ao buscar reserva: " + databaseError.getMessage());
                 }
             });
         }

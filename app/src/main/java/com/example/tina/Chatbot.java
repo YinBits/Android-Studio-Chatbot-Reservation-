@@ -211,10 +211,10 @@ public class Chatbot extends Fragment {
             if (currentQuestionIndex == 3) {
                 // Se for a pergunta sobre a mesa, adicione a imagem da mesa
 // Enviar a mensagem com imagem
-                addBotMessageWithImage("Tina", questions.get(currentQuestionIndex), R.drawable.mapamesas);
+                addBotMessageWithImage("Tina",questions.get(currentQuestionIndex), R.drawable.mapamesas);
 
 // Enviar a mensagem de texto abaixo da imagem
-                addBotMessage("Tina", "Digite o número da mesa desejada");
+                addBotMessage("Tina", questions.get(currentQuestionIndex));
 
             } else {
                 // Caso contrário, adicione apenas o texto da pergunta
@@ -498,11 +498,6 @@ public class Chatbot extends Fragment {
         imageView.setLayoutParams(imageParams);
         messageLayout.addView(imageView);
 
-        // Adicione o texto da mensagem
-        TextView textView = new TextView(getContext());
-        textView.setText(message);
-        messageLayout.addView(textView);
-
         // Defina margens e layout para a mensagem
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         int defaultMargin = getResources().getDimensionPixelSize(R.dimen.message_margin);
@@ -527,5 +522,4 @@ public class Chatbot extends Fragment {
     }
 
 }
-
 

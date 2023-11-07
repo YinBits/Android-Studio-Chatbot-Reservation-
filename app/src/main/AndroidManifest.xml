@@ -23,14 +23,18 @@
             android:exported="false" />
         <activity
             android:name=".Registro"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/AppTheme.FullScreen"/>
         <activity
             android:name=".Login"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/AppTheme.FullScreen">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity
             android:name=".MainActivity"
