@@ -3,7 +3,6 @@ package com.example.tina;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,6 +69,7 @@ public class Home extends Fragment {
 
         // Obtenha uma referência ao banco de dados "ImagensBanner"
         DatabaseReference imagensBannerRef = FirebaseDatabase.getInstance().getReference("Banners");
+        DatabaseReference reservaRef = FirebaseDatabase.getInstance().getReference("Reservas");
 
         imagensBannerRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -112,7 +112,7 @@ public class Home extends Fragment {
                 // Certifique-se de que o usuário tenha uma reserva antes de permitir o cancelamento
 
                 if (databaseReference != null) {
-                    databaseReference.child("Reservas").addListenerForSingleValueEvent(new ValueEventListener() {
+                    reservaRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
@@ -181,34 +181,27 @@ public class Home extends Fragment {
     }
 
     // Verifique se o usuário tem uma reserva
-    // Verifique se o usuário tem uma reserva
     private void checkReservation() {
-        if (databaseReference != null) {
-            databaseReference.child("Reservas").addListenerForSingleValueEvent(new ValueEventListener() {
+        if (currentUser != null) {
+            String userId = currentUser.getEmail().substring(0, currentUser.getEmail().indexOf('@'));
+            DatabaseReference reservaRef = FirebaseDatabase.getInstance().getReference("Reservas").child(userId);
+
+            reservaRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        // O usuário tem uma reserva, exiba os detalhes
+                        // As informações da reserva existem no banco de dados
                         String data = dataSnapshot.child("dataReserva").getValue(String.class);
                         String horario = dataSnapshot.child("horarioReserva").getValue(String.class);
                         String numeroDaMesa = dataSnapshot.child("numeroMesa").getValue(String.class);
                         String numeroDePessoas = dataSnapshot.child("numeroPessoas").getValue(String.class);
 
-                        // Adicione logs para verificar os valores
-                        Log.d("Reserva", "Data: " + data);
-                        Log.d("Reserva", "Horário: " + horario);
-                        Log.d("Reserva", "Número da Mesa: " + numeroDaMesa);
-                        Log.d("Reserva", "Número de Pessoas: " + numeroDePessoas);
-
-                        String reservaInfo = data + " no " + horario + " na mesa " + numeroDaMesa + " para " + numeroDePessoas + " pessoas";
-
-                        // Adicione um log para verificar a string de reserva
-                        Log.d("Reserva", "Reserva Info: " + reservaInfo);
-
+                        // Atualize sua interface com as informações da reserva
+                        String reservaInfo = "Na data "+data + " no horario:" + horario + ", na mesa " + numeroDaMesa + " para " + numeroDePessoas + " pessoas";
                         txtReserva.setText(reservaInfo);
                         btnCancelarReserva.setVisibility(View.VISIBLE);
                     } else {
-                        // Não há reserva para este usuário
+                        // Nenhuma reserva encontrada para o usuário
                         txtReserva.setText("Nenhuma reserva em seu nome");
                         btnCancelarReserva.setVisibility(View.GONE);
                     }
@@ -216,10 +209,10 @@ public class Home extends Fragment {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    // Trate os erros de consulta, se necessário
-                    Log.e("Reserva", "Erro ao buscar reserva: " + databaseError.getMessage());
+                    // Lidar com erros de consulta, se necessário
                 }
             });
         }
     }
+
 }

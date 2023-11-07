@@ -1,5 +1,6 @@
 package com.example.tina;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -13,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -66,7 +68,6 @@ public class Chatbot extends Fragment {
 
     private String userName = "";
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chatbot, container, false);
@@ -77,16 +78,26 @@ public class Chatbot extends Fragment {
 
         sendButton.setOnClickListener(v -> sendMessage());
 
-
         String userEmail = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail();
         String user = userEmail.substring(0, userEmail.indexOf('@')).replace(".", "-");
         DatabaseReference userReference = FirebaseDatabase.getInstance().getReference("Usuário").child(user);
 
         userReference.child("nome").addListenerForSingleValueEvent(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    userName = dataSnapshot.getValue(String.class);
+                    try {
+                        String username = dataSnapshot.child("nome").getValue(String.class);
+                        if (username != null) {
+                            // Atualize a variável de instância userName
+                            userName = Codex.decode(username);
+                        } else {
+                            // Lide com o caso em que "nome" é nulo
+                        }
+                    } catch (NullPointerException e) {
+                        // Trate a exceção de maneira apropriada, por exemplo, exibindo uma mensagem de erro
+                    }
                 }
             }
 
@@ -95,7 +106,6 @@ public class Chatbot extends Fragment {
                 Log.e("Chatbot", "Erro ao acessar o banco de dados para obter o nome do usuário: " + databaseError.getMessage());
             }
         });
-
 
         questions = new ArrayList<>();
         questions.add("Qual data você deseja fazer a reserva? (DD/MM/AAAA)");
@@ -110,9 +120,7 @@ public class Chatbot extends Fragment {
         initializeTableAndPeopleWordToNumberMap();
         initializeTimeWordToNumberMap();
 
-
         return view;
-
     }
 
     // Função para inicializar o mapa de conversão para mesas e pessoas
