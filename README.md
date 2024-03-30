@@ -19,7 +19,7 @@
 
 <h2>Como Executar o Projeto</h2>
 <ol>
-  <li>Clone este repositório: <code>git clone https://github.com/YinBits/nome-do-repositorio.git</code></li>
+  <li>Clone este repositório: <code>git clone https://github.com/YinBits/Android-Studio-Chatbot-Reservation-.git</code></li>
   <li>Abra o projeto no Android Studio.</li>
   <li>Compile e execute o projeto em um emulador ou dispositivo Android.</li>
 </ol>
